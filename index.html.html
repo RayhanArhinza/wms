@@ -1,0 +1,890 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, viewport-fit=cover">
+<title>TOTO WMS Consume — Aplikasi User</title>
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+<link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=IBM+Plex+Mono:wght@500;600&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --navy:#12213D;
+  --navy-2:#1B2E52;
+  --orange:#FF7A1A;
+  --orange-dk:#E4650A;
+  --bg:#F3F4F7;
+  --card:#FFFFFF;
+  --ink:#1A2233;
+  --muted:#6B7386;
+  --line:#E4E6ED;
+  --ok:#1E8E5A;
+  --warn:#C98A00;
+  --bad:#D6432F;
+  --radius:14px;
+}
+*{box-sizing:border-box;}
+html,body{height:100%;}
+body{
+  background:var(--bg);
+  font-family:'Inter',system-ui,sans-serif;
+  color:var(--ink);
+  -webkit-tap-highlight-color:transparent;
+}
+.phone{
+  max-width:430px;
+  margin:0 auto;
+  min-height:100vh;
+  background:var(--bg);
+  position:relative;
+  box-shadow:0 0 40px rgba(0,0,0,.08);
+  display:flex;
+  flex-direction:column;
+}
+.mono{font-family:'IBM Plex Mono',monospace;}
+.display{font-family:'Space Grotesk',sans-serif;}
+
+/* ===== Top bar ===== */
+.topbar{
+  background:linear-gradient(135deg,var(--navy) 0%,var(--navy-2) 100%);
+  color:#fff;
+  padding:14px 16px 16px;
+  position:sticky; top:0; z-index:40;
+  border-bottom:3px solid var(--orange);
+}
+.topbar .brand{display:flex;align-items:center;gap:10px;}
+.brand .mark{
+  width:36px;height:36px;border-radius:8px;
+  background:var(--orange);
+  display:flex;align-items:center;justify-content:center;
+  font-weight:700; font-family:'Space Grotesk'; font-size:13px;
+  box-shadow:0 2px 0 var(--orange-dk);
+  letter-spacing:.02em;
+}
+.brand small{color:#B9C3DD;display:block;font-size:10.5px;letter-spacing:.03em;}
+.brand strong{font-family:'Space Grotesk';font-size:15.5px;letter-spacing:.02em;}
+.pill-user{
+  background:#ffffff14; border:1px solid #ffffff26;
+  border-radius:20px; padding:4px 10px 4px 4px;
+  display:flex; align-items:center; gap:6px; font-size:11.5px;
+}
+.pill-user .av{width:24px;height:24px;border-radius:50%;background:var(--orange);display:flex;align-items:center;justify-content:center;font-size:10.5px;font-weight:700;}
+.topbar-sub{display:flex; align-items:center; gap:8px; margin-top:12px;}
+.topbar-sub .back-btn{
+  width:30px;height:30px;border-radius:9px;background:#ffffff14;border:1px solid #ffffff26;
+  display:flex;align-items:center;justify-content:center;color:#fff; flex:none;
+}
+.topbar-sub .title{font-family:'Space Grotesk'; font-weight:700; font-size:16px;}
+.topbar-sub .sub{font-size:11px;color:#B9C3DD;}
+
+/* ===== Page container ===== */
+.page{
+  flex:1;
+  padding:16px 16px 96px;
+  display:none;
+}
+.page.active{display:block;animation:fadein .18s ease;}
+@keyframes fadein{from{opacity:0;transform:translateY(6px);}to{opacity:1;transform:translateY(0);}}
+
+.section-title{
+  font-family:'Space Grotesk';
+  font-weight:700;
+  font-size:14.5px;
+  margin:20px 0 10px;
+  display:flex; align-items:center; gap:8px;
+  color:var(--navy);
+}
+.section-title .idx{
+  font-family:'IBM Plex Mono';
+  font-size:11px; color:var(--orange-dk);
+  background:#FFEEDF; padding:2px 6px; border-radius:5px;
+}
+
+/* ===== Cards ===== */
+.card-x{
+  background:var(--card);
+  border:1px solid var(--line);
+  border-radius:var(--radius);
+  padding:14px;
+  position:relative;
+  overflow:hidden;
+}
+.card-x.stripe::before{
+  content:"";
+  position:absolute; left:0; top:0; bottom:0; width:5px;
+  background:var(--orange);
+}
+.stat-grid{display:grid; grid-template-columns:1fr 1fr; gap:10px;}
+.stat-card{
+  background:var(--card); border:1px solid var(--line); border-radius:var(--radius);
+  padding:14px; position:relative;
+}
+.stat-card .num{font-family:'Space Grotesk'; font-size:24px; font-weight:700; color:var(--navy);}
+.stat-card .lbl{font-size:11px; color:var(--muted); margin-top:2px;}
+.stat-card i{position:absolute; right:12px; top:12px; font-size:17px; color:var(--orange);}
+
+.access-grid{display:grid; grid-template-columns:1fr 1fr; gap:10px;}
+.access-btn{
+  background:#fff; border:1px solid var(--line); border-radius:16px; padding:16px 10px;
+  display:flex; flex-direction:column; align-items:center; gap:8px; text-align:center;
+  color:var(--navy); font-weight:600; font-size:12.5px;
+}
+.access-btn .ic-wrap{
+  width:42px;height:42px;border-radius:12px; display:flex;align-items:center;justify-content:center; font-size:19px;
+}
+.access-btn:active{background:#FFF7F0; border-color:var(--orange);}
+.ic-staging{background:#EEF1F8;color:var(--navy);}
+.ic-gi{background:#FDEBE7;color:var(--bad);}
+.ic-putaway{background:#E4F5EA;color:var(--ok);}
+.ic-opname{background:#FFF3DC;color:var(--warn);}
+
+.list-activity .li{
+  display:flex; gap:10px; align-items:flex-start;
+  padding:10px 0; border-bottom:1px solid var(--line);
+}
+.list-activity .li:last-child{border-bottom:none;}
+.list-activity .ic{
+  width:32px;height:32px;border-radius:8px; flex:none;
+  display:flex;align-items:center;justify-content:center; font-size:14px;
+}
+.li .t{font-size:13px; font-weight:600;}
+.li .s{font-size:11.5px; color:var(--muted);}
+.li .time{font-size:10.5px; color:var(--muted); white-space:nowrap;}
+
+/* ===== Buttons ===== */
+.btn-orange{
+  background:var(--orange); border:none; color:#fff; font-weight:600;
+  border-radius:10px; box-shadow:0 2px 0 var(--orange-dk);
+}
+.btn-orange:hover, .btn-orange:active{background:var(--orange-dk); color:#fff;}
+.btn-navy{
+  background:var(--navy); border:none; color:#fff; font-weight:600; border-radius:10px;
+}
+.btn-outline-navy{
+  border:1.5px solid var(--navy); color:var(--navy); font-weight:600; border-radius:10px; background:#fff;
+}
+
+/* ===== Bottom nav ===== */
+.bottombar{
+  position:fixed; left:50%; transform:translateX(-50%); bottom:0;
+  max-width:430px; width:100%;
+  background:#fff; border-top:1px solid var(--line);
+  display:flex; justify-content:space-between; align-items:center;
+  padding:6px 6px calc(6px + env(safe-area-inset-bottom));
+  z-index:50;
+  box-shadow:0 -6px 18px rgba(15,25,50,.06);
+}
+.nav-btn{
+  flex:1; border:none; background:none; display:flex; flex-direction:column; align-items:center;
+  gap:3px; padding:8px 2px; color:var(--muted); font-size:10.5px; font-weight:600;
+  border-radius:10px;
+}
+.nav-btn i{font-size:19px;}
+.nav-btn.active{color:var(--orange-dk);}
+.nav-btn.center{position:relative; top:-16px;}
+.nav-btn.center .fab{
+  width:52px;height:52px;border-radius:50%;
+  background:linear-gradient(135deg,var(--orange),var(--orange-dk));
+  color:#fff; display:flex;align-items:center;justify-content:center;
+  font-size:22px; box-shadow:0 6px 14px rgba(255,122,26,.45), 0 0 0 5px #fff;
+}
+.nav-btn.center span{margin-top:2px;}
+
+/* ===== Scan page ===== */
+.scanner-frame{
+  position:relative; width:100%; aspect-ratio:1/1; max-height:300px;
+  background:#0B1526; border-radius:18px; overflow:hidden;
+  display:flex; align-items:center; justify-content:center;
+}
+#qr-reader{width:100%; height:100%;}
+#qr-reader video{object-fit:cover;width:100%!important;height:100%!important;}
+.scan-corners span{
+  position:absolute; width:34px; height:34px; border:3px solid var(--orange); opacity:.95;
+}
+.scan-corners .tl{top:14px;left:14px;border-right:none;border-bottom:none;border-top-left-radius:8px;}
+.scan-corners .tr{top:14px;right:14px;border-left:none;border-bottom:none;border-top-right-radius:8px;}
+.scan-corners .bl{bottom:14px;left:14px;border-right:none;border-top:none;border-bottom-left-radius:8px;}
+.scan-corners .br{bottom:14px;right:14px;border-left:none;border-top:none;border-bottom-right-radius:8px;}
+.scan-line{
+  position:absolute; left:14px; right:14px; height:2px; top:20px;
+  background:linear-gradient(90deg,transparent, var(--orange), transparent);
+  animation:scanmove 2.1s ease-in-out infinite;
+  box-shadow:0 0 8px var(--orange);
+}
+@keyframes scanmove{0%{top:16px;}50%{top:calc(100% - 16px);}100%{top:16px;}}
+.scan-hint{color:#B9C3DD; font-size:11.5px; text-align:center; margin-top:12px;}
+.manual-entry{margin-top:14px;}
+
+.bin-header{
+  background:var(--navy); color:#fff; border-radius:16px; padding:16px;
+  display:flex; justify-content:space-between; align-items:center; margin-top:14px;
+}
+.bin-header .code{font-family:'IBM Plex Mono'; font-size:19px; font-weight:600; letter-spacing:.03em;}
+.bin-header .loc{font-size:11px; color:#B9C3DD; margin-top:2px;}
+.badge-slot{
+  font-family:'IBM Plex Mono'; font-size:10.5px; background:#ffffff1c; border:1px solid #ffffff30;
+  padding:4px 9px; border-radius:20px;
+}
+
+.form-label-x{font-size:12px; font-weight:600; color:var(--navy); margin-bottom:4px;}
+.form-control, .form-select{border-radius:10px; border:1px solid var(--line); font-size:13.5px;}
+.form-control:focus, .form-select:focus{border-color:var(--orange); box-shadow:0 0 0 3px #FF7A1A22;}
+
+.mat-preview{
+  background:var(--card); border:1px solid var(--line); border-radius:14px; padding:13px; margin-top:14px;
+  display:flex; gap:12px; display:none;
+}
+.mat-preview .thumb{
+  width:44px;height:44px;border-radius:10px;background:#EEF1F8; color:var(--navy);
+  display:flex;align-items:center;justify-content:center; font-size:18px; flex:none;
+}
+.mat-preview .code-m{font-family:'IBM Plex Mono'; font-size:12px; color:var(--orange-dk); font-weight:600;}
+.mat-preview .name-m{font-weight:700; font-size:13.5px; margin:1px 0 6px;}
+.kv{display:grid; grid-template-columns:1fr 1fr; gap:4px 10px; font-size:11.5px; color:var(--muted);}
+.kv b{color:var(--ink); font-weight:600;}
+
+.qty-block{margin-top:18px; display:none;}
+.qty-stepper{display:flex; align-items:center; border:1px solid var(--line); border-radius:12px; overflow:hidden; background:#fff;}
+.qty-stepper button{border:none; background:#F3F4F7; width:44px; height:46px; font-size:18px; color:var(--navy); font-weight:700;}
+.qty-stepper input{border:none; text-align:center; flex:1; font-weight:700; font-family:'IBM Plex Mono'; font-size:16px;}
+.qty-stepper input:focus{outline:none;}
+
+.opname-compare{display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-top:14px;}
+.opname-box{border:1px solid var(--line); border-radius:12px; padding:12px; background:#fff;}
+.opname-box .lbl{font-size:11px;color:var(--muted); font-weight:600;}
+.opname-box .val{font-family:'IBM Plex Mono'; font-size:20px; font-weight:700; color:var(--navy); margin-top:4px;}
+.opname-result{border-radius:14px; padding:14px; margin-top:14px; display:none;}
+.opname-result.match{background:#EEF9F2; border:1px solid #BEE6CC;}
+.opname-result.mismatch{background:#FDEEEC; border:1px solid #F3C2B9;}
+
+/* Staging list */
+.staging-item{
+  display:flex; align-items:center; gap:12px; background:#fff; border:1px solid var(--line);
+  border-radius:14px; padding:12px 13px; margin-bottom:9px;
+}
+.staging-item .thumb{
+  width:40px;height:40px;border-radius:10px;background:#EEF1F8;color:var(--navy);
+  display:flex;align-items:center;justify-content:center;font-size:16px;flex:none;
+}
+.staging-item .t{font-weight:700; font-size:13px;}
+.staging-item .s{font-size:11px; color:var(--muted); margin-top:1px;}
+.staging-item .badge-dest{
+  font-family:'IBM Plex Mono'; font-size:10px; background:#EEF1F8; color:var(--navy);
+  padding:3px 8px; border-radius:20px; white-space:nowrap;
+}
+.search-box{position:relative; margin-bottom:14px;}
+.search-box input{padding-left:36px;}
+.search-box i{position:absolute; left:12px; top:50%; transform:translateY(-50%); color:var(--muted);}
+
+/* Riwayat */
+.filter-chips{display:flex; gap:6px; overflow-x:auto; padding-bottom:4px; margin-bottom:14px;}
+.filter-chips::-webkit-scrollbar{display:none;}
+.chip-btn{
+  flex:none; border:1px solid var(--line); background:#fff; color:var(--muted);
+  font-size:12px; font-weight:600; padding:7px 13px; border-radius:20px; white-space:nowrap;
+}
+.chip-btn.active{background:var(--navy); border-color:var(--navy); color:#fff;}
+.riwayat-item{
+  display:flex; gap:10px; align-items:flex-start; background:#fff; border:1px solid var(--line);
+  border-radius:14px; padding:12px 13px; margin-bottom:9px;
+}
+.riwayat-item .ic{width:34px;height:34px;border-radius:9px;flex:none;display:flex;align-items:center;justify-content:center;font-size:14px;}
+.ic-staging-bg{background:#EEF1F8;color:var(--navy);}
+.ic-gi-bg{background:#FDEBE7;color:var(--bad);}
+.ic-putaway-bg{background:#E4F5EA;color:var(--ok);}
+.ic-opname-bg{background:#FFF3DC;color:var(--warn);}
+.riwayat-item .t{font-weight:700; font-size:13px;}
+.riwayat-item .s{font-size:11.5px; color:var(--muted); margin-top:1px;}
+.riwayat-item .time{font-size:10.5px; color:var(--muted); white-space:nowrap;}
+
+footer.f-note{font-size:10.5px; color:var(--muted); text-align:center; margin-top:18px;}
+.empty-state{text-align:center; color:var(--muted); font-size:12.5px; padding:30px 10px;}
+.empty-state i{font-size:30px; display:block; margin-bottom:8px; color:var(--line);}
+</style>
+</head>
+<body>
+<div class="phone">
+
+  <!-- ===================== TOP BAR ===================== -->
+  <div class="topbar" id="topbarWrap">
+    <div class="d-flex justify-content-between align-items-center">
+      <div class="brand">
+        <div class="mark display">TOTO</div>
+        <div>
+          <strong>WMS Consume</strong>
+          <small>Seksi Consume</small>
+        </div>
+      </div>
+      <div class="pill-user">
+        <div class="av">AR</div>
+        <span>Andi R.</span>
+      </div>
+    </div>
+    <div class="topbar-sub" id="topbarSub" style="display:none;">
+      <button class="back-btn" onclick="goHome()"><i class="bi bi-arrow-left"></i></button>
+      <div>
+        <div class="title" id="topbarTitle">Good Issue</div>
+        <div class="sub" id="topbarSubtitle">Scan bin untuk mulai proses</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===================== PAGE: HOME ===================== -->
+  <div class="page active" id="page-home">
+    <div class="section-title"><span class="idx">01</span>Ringkasan Hari ini</div>
+    <div class="stat-grid">
+      <div class="stat-card"><i class="bi bi-box-seam"></i><div class="num">128</div><div class="lbl">Bin Aktif</div></div>
+      <div class="stat-card"><i class="bi bi-truck"></i><div class="num">6</div><div class="lbl">GR</div></div>
+      <div class="stat-card"><i class="bi bi-box-arrow-up-right"></i><div class="num">4</div><div class="lbl">GI</div></div>
+      <div class="stat-card"><i class="bi bi-clipboard-check"></i><div class="num">17</div><div class="lbl">Opname Hari ini</div></div>
+    </div>
+
+    <div class="section-title"><span class="idx">02</span>Akses Cepat</div>
+    <div class="access-grid">
+      <button class="access-btn" onclick="openStagingList()">
+        <div class="ic-wrap ic-staging"><i class="bi bi-collection"></i></div>
+        List material staging
+      </button>
+      <button class="access-btn" onclick="openProcess('gi')">
+        <div class="ic-wrap ic-gi"><i class="bi bi-box-arrow-up"></i></div>
+        Good Issue
+      </button>
+      <button class="access-btn" onclick="openProcess('putaway')">
+        <div class="ic-wrap ic-putaway"><i class="bi bi-box-arrow-in-down"></i></div>
+        Putaway
+      </button>
+      <button class="access-btn" onclick="openProcess('opname')">
+        <div class="ic-wrap ic-opname"><i class="bi bi-clipboard-data"></i></div>
+        Stock Opname
+      </button>
+    </div>
+
+    <div class="section-title"><span class="idx">03</span>Aktivitas terbaru</div>
+    <div class="card-x list-activity" id="homeActivityList"></div>
+    <footer class="f-note">WMS Consume · TOTO · Gudang Consume &amp; 2F</footer>
+  </div>
+
+  <!-- ===================== PAGE: STAGING LIST ===================== -->
+  <div class="page" id="page-staging">
+    <div class="search-box">
+      <i class="bi bi-search"></i>
+      <input type="text" class="form-control" id="stagingSearch" placeholder="Cari material / kode..." oninput="renderStagingList()">
+    </div>
+    <div class="section-title" style="margin-top:0"><span class="idx">·</span>Material Menunggu Putaway</div>
+    <div id="stagingListWrap"></div>
+    <footer class="f-note">Ketuk item untuk langsung diproses Putaway</footer>
+  </div>
+
+  <!-- ===================== PAGE: PROCESS SCAN ===================== -->
+  <div class="page" id="page-process">
+
+    <!-- STAGE 1: SCAN -->
+    <div id="procStage1">
+      <div class="section-title" style="margin-top:6px"><span class="idx">QR</span>Scan QR Code Bin</div>
+      <div class="scanner-frame">
+        <div id="qr-reader"></div>
+        <div class="scan-corners"><span class="tl"></span><span class="tr"></span><span class="bl"></span><span class="br"></span></div>
+        <div class="scan-line"></div>
+      </div>
+      <div class="scan-hint">Arahkan kamera ke QR Code pada label Bin.</div>
+
+      <div class="manual-entry">
+        <div class="form-label-x">Atau masukkan kode Bin manual</div>
+        <div class="input-group">
+          <input type="text" class="form-control" id="manualBinCode" placeholder="cth. CS-A-03-02">
+          <button class="btn btn-navy" onclick="scanBin(document.getElementById('manualBinCode').value)">Cari</button>
+        </div>
+      </div>
+
+      <div class="section-title"><span class="idx">·</span>Bin Terakhir Diakses</div>
+      <div id="recentBinWrap"></div>
+    </div>
+
+    <!-- STAGE 2: RESULT + QTY FORM -->
+    <div id="procStage2" style="display:none;">
+      <button class="btn btn-sm btn-outline-navy mb-2" onclick="backToScan()"><i class="bi bi-arrow-left"></i> Scan ulang</button>
+      <div class="bin-header">
+        <div>
+          <div class="code" id="binCodeOut">CS-A-03-02</div>
+          <div class="loc" id="binLocOut">Gudang Consume · Rak A</div>
+        </div>
+        <div class="badge-slot" id="binSlotOut">2 item</div>
+      </div>
+
+      <div class="section-title"><span class="idx">·</span>Pilih Material &amp; Bin</div>
+      <select class="form-select" id="matSelect" onchange="selectMaterial()">
+        <option value="">— Pilih material —</option>
+      </select>
+
+      <div class="mat-preview" id="matPreview">
+        <div class="thumb"><i class="bi bi-box-seam"></i></div>
+        <div class="flex-grow-1">
+          <div class="code-m" id="pvCode"></div>
+          <div class="name-m" id="pvName"></div>
+          <div class="kv">
+            <span>Satuan: <b id="pvUom"></b></span>
+            <span>Qty Sistem: <b id="pvQty"></b></span>
+            <span>Batch: <b id="pvBatch"></b></span>
+            <span>Lokasi: <b id="pvLoc"></b></span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Good Issue / Putaway qty stepper -->
+      <div class="qty-block" id="qtyBlockStepper">
+        <div class="form-label-x" id="qtyStepperLabel">Qty Dikeluarkan</div>
+        <div class="qty-stepper">
+          <button onclick="stepQty(-1)"><i class="bi bi-dash"></i></button>
+          <input type="number" id="procQty" value="1" min="0">
+          <button onclick="stepQty(1)"><i class="bi bi-plus"></i></button>
+        </div>
+        <button class="btn btn-orange w-100 py-2 mt-3" onclick="submitTransaction()" id="submitBtnStepper">
+          <i class="bi bi-check2-circle me-1"></i>Konfirmasi
+        </button>
+      </div>
+
+      <!-- Stock Opname compare -->
+      <div class="qty-block" id="qtyBlockOpname">
+        <div class="opname-compare">
+          <div class="opname-box">
+            <div class="lbl">Qty Sistem</div>
+            <div class="val" id="opSysQty">0</div>
+          </div>
+          <div class="opname-box">
+            <div class="lbl">Qty Aktual</div>
+            <input type="number" class="form-control mt-1 mono" id="opActualQty" placeholder="0">
+          </div>
+        </div>
+        <button class="btn btn-navy w-100 py-2 mt-3" onclick="runOpnameCheck()">
+          <i class="bi bi-search me-1"></i>Cek &amp; Simpan
+        </button>
+        <div class="opname-result" id="opResultBox"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===================== PAGE: RIWAYAT ===================== -->
+  <div class="page" id="page-riwayat">
+    <div class="section-title" style="margin-top:6px"><span class="idx">·</span>Riwayat Transaksi</div>
+    <div class="filter-chips">
+      <button class="chip-btn active" data-f="all" onclick="setRiwayatFilter('all')">Semua</button>
+      <button class="chip-btn" data-f="gi" onclick="setRiwayatFilter('gi')">Good Issue</button>
+      <button class="chip-btn" data-f="putaway" onclick="setRiwayatFilter('putaway')">Putaway</button>
+      <button class="chip-btn" data-f="opname" onclick="setRiwayatFilter('opname')">Stock Opname</button>
+    </div>
+    <div id="riwayatListWrap"></div>
+  </div>
+
+  <!-- ===================== BOTTOM BAR ===================== -->
+  <div class="bottombar">
+    <button class="nav-btn active" data-page="home" onclick="goHome()"><i class="bi bi-house-door-fill"></i><span>Home</span></button>
+    <button class="nav-btn center" data-page="process" onclick="openProcess(null)">
+      <div class="fab"><i class="bi bi-qr-code-scan"></i></div>
+      <span>Cari (Scan)</span>
+    </button>
+    <button class="nav-btn" data-page="riwayat" onclick="goPage('riwayat')"><i class="bi bi-clock-history"></i><span>Riwayat Transaksi</span></button>
+  </div>
+
+  <!-- Toast -->
+  <div class="position-fixed bottom-0 start-50 translate-middle-x" style="z-index:200; margin-bottom:96px;">
+    <div id="mainToast" class="toast align-items-center text-bg-dark border-0" role="alert">
+      <div class="d-flex">
+        <div class="toast-body" id="toastMsg" style="font-size:12.5px;"></div>
+        <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast"></button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/html5-qrcode@2.3.8/html5-qrcode.min.js"></script>
+<script>
+/* ================= Mock data ================= */
+const BIN_DB = {
+  "CS-A-03-02": {
+    loc: "Gudang Consume · Rak A · Level 03",
+    materials: [
+      {code:"MAT-10023456", name:"Sarung Tangan Safety Nitrile L", uom:"BOX", batch:"2405A", qtySys:12},
+      {code:"MAT-10088211", name:"Bearing 6204 ZZ", uom:"PC", batch:"-", qtySys:50}
+    ]
+  },
+  "CS-A-01-01": {
+    loc: "Gudang Consume · Rak A · Level 01",
+    materials: [
+      {code:"MAT-10099002", name:"Filter Oli Hidrolik", uom:"PC", batch:"-", qtySys:14}
+    ]
+  },
+  "OVERFLOW-01": {
+    loc: "Area Overflow · Gudang Consume",
+    materials: [
+      {code:"MAT-10023456", name:"Sarung Tangan Safety Nitrile L", uom:"BOX", batch:"2405A", qtySys:6},
+      {code:"MAT-10077341", name:"Selang Hidrolik 1/2\"", uom:"MTR", batch:"-", qtySys:25},
+      {code:"MAT-10012009", name:"Kabel Ties 200mm", uom:"PACK", batch:"-", qtySys:40}
+    ]
+  }
+};
+const RECENT_BINS = ["CS-A-03-02","CS-A-01-01","OVERFLOW-01"];
+
+let STAGING_ITEMS = [
+  {code:"MAT-10055671", name:"Motor Servo AC 750W", uom:"PC", qty:2, destBin:"CS-B-02-01"},
+  {code:"MAT-10012345", name:"Oli Gear SAE 90", uom:"DRUM", qty:1, destBin:"CS-A-03-02"},
+  {code:"MAT-10099881", name:"Lampu LED Panel 40W", uom:"PC", qty:8, destBin:"CS-C-01-04"},
+  {code:"MAT-10077341", name:"Selang Hidrolik 1/2\"", uom:"MTR", qty:30, destBin:"OVERFLOW-01"}
+];
+
+let RIWAYAT = [
+  {type:"gi", title:"Good Issue Bin CS-A-03-02", detail:"Sarung Tangan Safety Nitrile L · 3 BOX", time:"08:42"},
+  {type:"opname", title:"Stock Opname Bin CS-A-01-01", detail:"Sesuai sistem, tidak ada selisih", time:"09:15"},
+  {type:"putaway", title:"Putaway Bin CS-B-02-01", detail:"Motor Servo AC 750W · 2 PC", time:"10:02"}
+];
+
+const PROC_LABELS = {
+  gi:{title:"Good Issue", subtitle:"Scan bin untuk mengeluarkan material", qtyLabel:"Qty Dikeluarkan", icClass:"ic-gi-bg", icon:"bi-box-arrow-up", toast:"Good Issue berhasil disimpan"},
+  putaway: {title:"Putaway", subtitle:"Scan bin tujuan penyimpanan", qtyLabel:"Qty Diletakkan", icClass:"ic-putaway-bg", icon:"bi-box-arrow-in-down", toast:"Putaway berhasil disimpan"},
+  opname: {title:"Stock Opname", subtitle:"Scan bin untuk cek kesesuaian stok", qtyLabel:"", icClass:"ic-opname-bg", icon:"bi-clipboard-data", toast:"Stock Opname tersimpan"},
+  null: {title:"Cari Bin", subtitle:"Scan bin lalu pilih proses", qtyLabel:"Qty", icClass:"ic-staging-bg", icon:"bi-qr-code-scan", toast:"Transaksi tersimpan"}
+};
+
+let currentProcess = null;   // 'gi' | 'putaway' | 'opname' | null
+let currentBinCode = null;
+let currentMaterial = null;
+let presetPutawayCode = null; // when coming from staging list
+
+/* ================= Navigation ================= */
+function goPage(name){
+  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+  document.getElementById('page-'+name).classList.add('active');
+  document.querySelectorAll('.nav-btn').forEach(b=>b.classList.remove('active'));
+  const map = {home:'home', process:'process', riwayat:'riwayat'};
+  let navKey = name==='staging' ? 'process' : (name==='process' ? 'process' : name);
+  // only highlight actual bottom nav items
+  document.querySelectorAll('.nav-btn').forEach(b=>{
+    if(b.dataset.page===name) b.classList.add('active');
+  });
+  window.scrollTo({top:0,behavior:'instant'});
+
+  const sub = document.getElementById('topbarSub');
+  if(name==='home' || name==='riwayat'){
+    sub.style.display='none';
+    if(name==='riwayat'){ renderRiwayat(); }
+    else { renderHomeActivity(); }
+  }
+  if(name!=='process'){ stopScanner(); }
+}
+
+function goHome(){
+  currentProcess = null;
+  goPage('home');
+  document.querySelector('.nav-btn[data-page="home"]').classList.add('active');
+}
+
+/* Open a specific process (gi / putaway / opname) or null for generic scan */
+function openProcess(type){
+  currentProcess = type;
+  currentBinCode = null;
+  currentMaterial = null;
+  const info = PROC_LABELS[type];
+  document.getElementById('topbarTitle').textContent = info.title;
+  document.getElementById('topbarSubtitle').textContent = info.subtitle;
+  document.getElementById('topbarSub').style.display='flex';
+
+  document.getElementById('procStage1').style.display='block';
+  document.getElementById('procStage2').style.display='none';
+  document.getElementById('manualBinCode').value='';
+  renderRecentBins();
+
+  goPage('process');
+  document.querySelectorAll('.nav-btn').forEach(b=>b.classList.remove('active'));
+  document.querySelector('.nav-btn[data-page="process"]').classList.add('active');
+  setTimeout(initScanner, 150);
+}
+
+function openStagingList(){
+  document.getElementById('topbarTitle').textContent = 'List Material Staging';
+  document.getElementById('topbarSubtitle').textContent = 'Material menunggu proses Putaway';
+  document.getElementById('topbarSub').style.display='flex';
+  goPage('staging');
+  renderStagingList();
+}
+
+/* ================= Toast ================= */
+function showToast(msg){
+  document.getElementById('toastMsg').textContent = msg;
+  const t = new bootstrap.Toast(document.getElementById('mainToast'), {delay:2600});
+  t.show();
+}
+
+/* ================= QR Scanner ================= */
+let html5QrCode = null;
+let scannerRunning = false;
+function initScanner(){
+  const el = document.getElementById('qr-reader');
+  if(!el || scannerRunning) return;
+  try{
+    html5QrCode = new Html5Qrcode("qr-reader");
+    html5QrCode.start(
+      { facingMode: "environment" },
+      { fps: 10, qrbox: { width: 220, height: 220 } },
+      (decodedText)=>{ scanBin(decodedText); },
+      ()=>{}
+    ).then(()=>{ scannerRunning = true; })
+    .catch(()=>{
+      document.getElementById('qr-reader').innerHTML =
+        '<div class="text-center px-4" style="color:#B9C3DD;font-size:12px;"><i class="bi bi-camera-video-off fs-3 d-block mb-2"></i>Kamera tidak tersedia / izin ditolak.<br>Gunakan input manual di bawah.</div>';
+    });
+  }catch(e){}
+}
+function stopScanner(){
+  if(html5QrCode && scannerRunning){
+    html5QrCode.stop().then(()=>{ scannerRunning=false; html5QrCode.clear(); }).catch(()=>{});
+  }
+}
+
+/* ================= Recent bins ================= */
+function renderRecentBins(){
+  const wrap = document.getElementById('recentBinWrap');
+  wrap.innerHTML = '';
+  RECENT_BINS.forEach(code=>{
+    const data = BIN_DB[code];
+    wrap.innerHTML += `
+      <div class="card-x stripe mb-2" role="button" onclick="scanBin('${code}')">
+        <div class="d-flex justify-content-between align-items-center">
+          <div>
+            <div class="mono fw-semibold">${code}</div>
+            <div style="font-size:11.5px;color:var(--muted)">${data.loc} · ${data.materials.length} material</div>
+          </div>
+          <i class="bi bi-chevron-right" style="color:var(--muted)"></i>
+        </div>
+      </div>`;
+  });
+}
+
+/* ================= Scan result render ================= */
+function scanBin(code){
+  code = (code||'').trim().toUpperCase();
+  if(!code){ showToast('Masukkan atau scan kode bin terlebih dahulu'); return; }
+  const data = BIN_DB[code] || BIN_DB["CS-A-03-02"];
+  const resolvedCode = BIN_DB[code] ? code : "CS-A-03-02";
+  currentBinCode = resolvedCode;
+
+  document.getElementById('binCodeOut').textContent = resolvedCode;
+  document.getElementById('binLocOut').textContent = data.loc;
+  document.getElementById('binSlotOut').textContent = data.materials.length+' item';
+
+  const sel = document.getElementById('matSelect');
+  sel.innerHTML = '<option value="">— Pilih material —</option>';
+  data.materials.forEach((m,i)=>{
+    sel.innerHTML += `<option value="${i}">${m.code} — ${m.name}</option>`;
+  });
+
+  document.getElementById('matPreview').style.display='none';
+  document.getElementById('qtyBlockStepper').style.display='none';
+  document.getElementById('qtyBlockOpname').style.display='none';
+  document.getElementById('opResultBox').style.display='none';
+
+  document.getElementById('procStage1').style.display='none';
+  document.getElementById('procStage2').style.display='block';
+
+  // auto preselect material if coming from staging list
+  if(presetPutawayCode){
+    const idx = data.materials.findIndex(m=>m.code===presetPutawayCode);
+    if(idx>=0){ sel.value = idx; selectMaterial(); }
+    presetPutawayCode = null;
+  }
+}
+
+function backToScan(){
+  document.getElementById('procStage1').style.display='block';
+  document.getElementById('procStage2').style.display='none';
+  setTimeout(initScanner,150);
+}
+
+function selectMaterial(){
+  const sel = document.getElementById('matSelect');
+  const idx = sel.value;
+  const preview = document.getElementById('matPreview');
+  const stepperBlock = document.getElementById('qtyBlockStepper');
+  const opnameBlock = document.getElementById('qtyBlockOpname');
+
+  if(idx===''){
+    preview.style.display='none';
+    stepperBlock.style.display='none';
+    opnameBlock.style.display='none';
+    currentMaterial = null;
+    return;
+  }
+  const data = BIN_DB[currentBinCode];
+  const m = data.materials[idx];
+  currentMaterial = m;
+
+  document.getElementById('pvCode').textContent = m.code;
+  document.getElementById('pvName').textContent = m.name;
+  document.getElementById('pvUom').textContent = m.uom;
+  document.getElementById('pvQty').textContent = m.qtySys;
+  document.getElementById('pvBatch').textContent = m.batch;
+  document.getElementById('pvLoc').textContent = currentBinCode;
+  preview.style.display='flex';
+
+  const type = currentProcess;
+  opnameBlock.style.display='none';
+  stepperBlock.style.display='none';
+  document.getElementById('opResultBox').style.display='none';
+
+  if(type==='opname'){
+    opnameBlock.style.display='block';
+    document.getElementById('opSysQty').textContent = m.qtySys;
+    document.getElementById('opActualQty').value='';
+  } else {
+    // gi / putaway / generic(null) -> default to Good Issue style stepper, user can pick action if generic
+    stepperBlock.style.display='block';
+    const label = (type && PROC_LABELS[type]) ? PROC_LABELS[type].qtyLabel : 'Qty Diproses';
+    document.getElementById('qtyStepperLabel').textContent = label;
+    document.getElementById('procQty').value = 1;
+  }
+}
+
+/* ================= Qty stepper ================= */
+function stepQty(dir){
+  const input = document.getElementById('procQty');
+  let v = parseInt(input.value||'0',10) + dir;
+  if(v<0) v=0;
+  input.value = v;
+}
+
+/* ================= Submit transactions ================= */
+function submitTransaction(){
+  if(!currentMaterial){ showToast('Pilih material terlebih dahulu'); return; }
+  const qty = parseInt(document.getElementById('procQty').value||'0',10);
+  if(qty<=0){ showToast('Qty harus lebih dari 0'); return; }
+
+  const type = currentProcess || 'gi';
+  const info = PROC_LABELS[type] || PROC_LABELS['gi'];
+  const now = new Date();
+  const timeStr = now.getHours().toString().padStart(2,'0')+':'+now.getMinutes().toString().padStart(2,'0');
+
+  RIWAYAT.unshift({
+    type: type,
+    title: info.title+' Bin '+currentBinCode,
+    detail: currentMaterial.name+' · '+qty+' '+currentMaterial.uom,
+    time: timeStr
+  });
+
+  // remove from staging list if putaway
+  if(type==='putaway'){
+    STAGING_ITEMS = STAGING_ITEMS.filter(s=>s.code!==currentMaterial.code);
+  }
+
+  showToast(info.toast);
+  goHome();
+}
+
+/* ================= Opname check ================= */
+function runOpnameCheck(){
+  if(!currentMaterial){ showToast('Pilih material terlebih dahulu'); return; }
+  const sysQty = currentMaterial.qtySys;
+  const actual = parseInt(document.getElementById('opActualQty').value||'0',10);
+  const box = document.getElementById('opResultBox');
+  box.style.display = 'block';
+
+  const now = new Date();
+  const timeStr = now.getHours().toString().padStart(2,'0')+':'+now.getMinutes().toString().padStart(2,'0');
+
+  if(actual === sysQty){
+    box.className = 'opname-result match';
+    box.innerHTML = `<div class="d-flex align-items-start gap-2">
+        <i class="bi bi-check-circle-fill fs-5" style="color:var(--ok)"></i>
+        <div><div class="fw-bold" style="font-size:13px;color:var(--ok)">Qty Sesuai</div>
+        <div style="font-size:12px;color:var(--ink);margin-top:4px;">Hasil hitung aktual sama dengan sistem. Data opname tersimpan.</div></div></div>`;
+    RIWAYAT.unshift({type:'opname', title:'Stock Opname Bin '+currentBinCode, detail:currentMaterial.name+' · sesuai sistem ('+sysQty+' '+currentMaterial.uom+')', time:timeStr});
+    showToast('Opname tersimpan, tidak ada selisih.');
+  }else{
+    const diff = actual - sysQty;
+    box.className = 'opname-result mismatch';
+    box.innerHTML = `<div class="d-flex align-items-start gap-2">
+        <i class="bi bi-exclamation-triangle-fill fs-5" style="color:var(--bad)"></i>
+        <div><div class="fw-bold" style="font-size:13px;color:var(--bad)">Ditemukan Selisih Qty</div>
+        <div style="font-size:12px;color:var(--ink);margin-top:4px;">${currentMaterial.name} — Sistem ${sysQty} ${currentMaterial.uom} vs Aktual ${actual} ${currentMaterial.uom} (selisih ${diff>0?'+':''}${diff}). Mohon konfirmasi ulang atau ajukan penyesuaian.</div></div></div>`;
+    RIWAYAT.unshift({type:'opname', title:'Stock Opname Bin '+currentBinCode, detail:currentMaterial.name+' · selisih '+(diff>0?'+':'')+diff+' '+currentMaterial.uom, time:timeStr});
+    showToast('Selisih ditemukan — cek notifikasi di bawah.');
+  }
+}
+
+/* ================= Staging list ================= */
+const STAGING_ICONS = {"PC":"bi-box-seam","BOX":"bi-box-seam","DRUM":"bi-droplet-half","MTR":"bi-bar-chart-steps","PACK":"bi-boxes"};
+function renderStagingList(){
+  const q = (document.getElementById('stagingSearch')?.value||'').toLowerCase();
+  const wrap = document.getElementById('stagingListWrap');
+  const filtered = STAGING_ITEMS.filter(s=> s.name.toLowerCase().includes(q) || s.code.toLowerCase().includes(q));
+  if(filtered.length===0){
+    wrap.innerHTML = `<div class="empty-state"><i class="bi bi-inbox"></i>Tidak ada material staging ditemukan.</div>`;
+    return;
+  }
+  wrap.innerHTML = filtered.map(s=>`
+    <div class="staging-item" role="button" onclick="processStagingItem('${s.code}')">
+      <div class="thumb"><i class="bi ${STAGING_ICONS[s.uom]||'bi-box-seam'}"></i></div>
+      <div class="flex-grow-1">
+        <div class="t">${s.name}</div>
+        <div class="s mono">${s.code} · ${s.qty} ${s.uom}</div>
+      </div>
+      <div class="badge-dest">${s.destBin}</div>
+    </div>`).join('');
+}
+function processStagingItem(code){
+  presetPutawayCode = code;
+  openProcess('putaway');
+}
+
+/* ================= Riwayat ================= */
+let riwayatFilter = 'all';
+function setRiwayatFilter(f){
+  riwayatFilter = f;
+  document.querySelectorAll('.chip-btn').forEach(b=>b.classList.toggle('active', b.dataset.f===f));
+  renderRiwayat();
+}
+const RIWAYAT_META = {
+  gi:{ic:'ic-gi-bg', icon:'bi-box-arrow-up'},
+  putaway:{ic:'ic-putaway-bg', icon:'bi-box-arrow-in-down'},
+  opname:{ic:'ic-opname-bg', icon:'bi-clipboard-data'}
+};
+function renderRiwayat(){
+  const wrap = document.getElementById('riwayatListWrap');
+  const list = riwayatFilter==='all' ? RIWAYAT : RIWAYAT.filter(r=>r.type===riwayatFilter);
+  if(list.length===0){
+    wrap.innerHTML = `<div class="empty-state"><i class="bi bi-clock-history"></i>Belum ada transaksi.</div>`;
+    return;
+  }
+  wrap.innerHTML = list.map(r=>{
+    const meta = RIWAYAT_META[r.type]||RIWAYAT_META.gi;
+    return `<div class="riwayat-item">
+      <div class="ic ${meta.ic}"><i class="bi ${meta.icon}"></i></div>
+      <div class="flex-grow-1">
+        <div class="t">${r.title}</div>
+        <div class="s">${r.detail}</div>
+      </div>
+      <div class="time">${r.time}</div>
+    </div>`;
+  }).join('');
+}
+
+/* ================= Home activity (mirror of riwayat, latest 3) ================= */
+function renderHomeActivity(){
+  const wrap = document.getElementById('homeActivityList');
+  const latest = RIWAYAT.slice(0,3);
+  wrap.innerHTML = latest.map(r=>{
+    const meta = RIWAYAT_META[r.type]||RIWAYAT_META.gi;
+    return `<div class="li">
+      <div class="ic ${meta.ic}"><i class="bi ${meta.icon}"></i></div>
+      <div class="flex-grow-1">
+        <div class="t">${r.title}</div>
+        <div class="s">${r.detail}</div>
+      </div>
+      <div class="time">${r.time}</div>
+    </div>`;
+  }).join('');
+}
+
+/* ================= Init ================= */
+renderHomeActivity();
+</script>
+</body>
+</html>
