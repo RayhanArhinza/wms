@@ -396,11 +396,8 @@ footer.f-note{font-size:10.5px; color:var(--muted); text-align:center; margin-to
         <div id="qr-reader"></div>
         <div class="scan-corners" id="scanCorners"><span class="tl"></span><span class="tr"></span><span class="bl"></span><span class="br"></span></div>
         <div class="scan-line" id="scanLine"></div>
-        <button type="button" id="activateCamBtn" class="btn btn-orange" style="position:absolute; z-index:5;" onclick="initScanner()">
-          <i class="bi bi-camera-fill me-1"></i>Aktifkan Kamera
-        </button>
       </div>
-      <div class="scan-hint" id="scanHintText">Ketuk tombol di atas untuk mengaktifkan kamera &amp; scan QR.</div>
+      <div class="scan-hint" id="scanHintText">Mengaktifkan kamera...</div>
 
       <div class="manual-entry">
         <div class="form-label-x">Atau masukkan kode Bin manual</div>
@@ -444,6 +441,9 @@ footer.f-note{font-size:10.5px; color:var(--muted); text-align:center; margin-to
             <span>Lokasi: <b id="pvLoc"></b></span>
           </div>
         </div>
+      </div>
+      <div class="bin-match-note ok" id="infoOnlyNote" style="display:none; margin-top:12px;">
+        <i class="bi bi-info-circle me-1"></i>Mode pencarian — hanya menampilkan informasi, tidak ada transaksi yang disimpan.
       </div>
 
       <!-- Good Issue / Putaway qty stepper -->
@@ -644,7 +644,7 @@ const PROC_LABELS = {
   gi:{title:"Good Issue", subtitle:"Scan bin untuk mengeluarkan material", qtyLabel:"Qty Dikeluarkan", toast:"Good Issue berhasil disimpan"},
   putaway: {title:"Putaway", subtitle:"Scan bin tujuan penyimpanan", qtyLabel:"Qty Diletakkan", toast:"Putaway berhasil disimpan"},
   opname: {title:"Stock Opname", subtitle:"Scan bin untuk cek kesesuaian stok", qtyLabel:"", toast:"Stock Opname tersimpan"},
-  null: {title:"Cari Bin", subtitle:"Scan bin lalu pilih proses", qtyLabel:"Qty", toast:"Transaksi tersimpan"}
+  null: {title:"Cari Material / Bin", subtitle:"Scan bin untuk melihat informasi material", qtyLabel:"", toast:""}
 };
 
 let currentProcess = null;      // 'gi' | 'putaway' | 'opname' | null
@@ -860,9 +860,9 @@ function isSecureEnough(){
 function showScanError(msg){
   document.getElementById('qr-reader').innerHTML =
     '<div class="text-center px-4" style="color:#B9C3DD;font-size:12px;"><i class="bi bi-camera-video-off fs-3 d-block mb-2"></i>'+msg+'<br>Gunakan input manual di bawah.</div>';
-  document.getElementById('activateCamBtn').style.display='none';
   document.getElementById('scanCorners').style.display='none';
   document.getElementById('scanLine').style.display='none';
+  document.getElementById('scanHintText').textContent = 'Kamera tidak aktif.';
 }
 
 function initScanner(){
@@ -878,7 +878,6 @@ function initScanner(){
     return;
   }
 
-  document.getElementById('activateCamBtn').style.display='none';
   document.getElementById('scanHintText').textContent = 'Mengaktifkan kamera...';
 
   try{
@@ -913,10 +912,10 @@ function resetScannerUI(){
   stopScanner();
   const el = document.getElementById('qr-reader');
   if(el) el.innerHTML='';
-  document.getElementById('activateCamBtn').style.display='inline-flex';
   document.getElementById('scanCorners').style.display='none';
   document.getElementById('scanLine').style.display='none';
-  document.getElementById('scanHintText').textContent = 'Ketuk tombol di atas untuk mengaktifkan kamera & scan QR.';
+  document.getElementById('scanHintText').textContent = 'Mengaktifkan kamera...';
+  setTimeout(initScanner, 150);
 }
 
 /* ================= Recent bins (only for generic FAB scan) ================= */
@@ -975,6 +974,7 @@ function scanBin(code){
   document.getElementById('qtyBlockOpname').style.display='none';
   document.getElementById('opResultBox').style.display='none';
   document.getElementById('penerimaBlock').style.display='none';
+  document.getElementById('infoOnlyNote').style.display='none';
 
   document.getElementById('procStage1').style.display='none';
   document.getElementById('procStage2').style.display='block';
@@ -1006,6 +1006,7 @@ function selectMaterial(){
     stepperBlock.style.display='none';
     opnameBlock.style.display='none';
     penerimaBlock.style.display='none';
+    document.getElementById('infoOnlyNote').style.display='none';
     currentMaterial = null;
     return;
   }
@@ -1026,6 +1027,13 @@ function selectMaterial(){
   stepperBlock.style.display='none';
   penerimaBlock.style.display='none';
   document.getElementById('opResultBox').style.display='none';
+
+  // Generic "Cari (Scan)" flow (no process selected) -> info only, no transaction
+  if(type === null){
+    document.getElementById('infoOnlyNote').style.display='block';
+    return;
+  }
+  document.getElementById('infoOnlyNote').style.display='none';
 
   if(type==='opname'){
     opnameBlock.style.display='block';
