@@ -123,19 +123,18 @@ body{
 .stat-card .lbl{font-size:11px; color:var(--muted); margin-top:2px;}
 .stat-card i{position:absolute; right:12px; top:12px; font-size:17px; color:var(--orange);}
 
-.access-grid{display:grid; grid-template-columns:1fr 1fr; gap:10px;}
+.access-grid{display:grid; grid-template-columns:repeat(3,1fr); gap:10px;}
 .access-btn{
-  background:#fff; border:1px solid var(--line); border-radius:16px; padding:16px 10px;
+  background:#fff; border:1px solid var(--line); border-radius:16px; padding:16px 8px;
   display:flex; flex-direction:column; align-items:center; gap:8px; text-align:center;
-  color:var(--navy); font-weight:600; font-size:12.5px;
+  color:var(--navy); font-weight:600; font-size:12px;
 }
 .access-btn .ic-wrap{
-  width:42px;height:42px;border-radius:12px; display:flex;align-items:center;justify-content:center; font-size:19px;
+  width:40px;height:40px;border-radius:12px; display:flex;align-items:center;justify-content:center; font-size:18px;
 }
 .access-btn:active{background:#FFF7F0; border-color:var(--orange);}
-.ic-staging{background:#EEF1F8;color:var(--navy);}
-.ic-gi{background:#FDEBE7;color:var(--bad);}
 .ic-putaway{background:#E4F5EA;color:var(--ok);}
+.ic-gi{background:#FDEBE7;color:var(--bad);}
 .ic-opname{background:#FFF3DC;color:var(--warn);}
 
 .list-activity .li{
@@ -157,6 +156,7 @@ body{
   border-radius:10px; box-shadow:0 2px 0 var(--orange-dk);
 }
 .btn-orange:hover, .btn-orange:active{background:var(--orange-dk); color:#fff;}
+.btn-orange:disabled{background:#F0C7A6; box-shadow:none; color:#fff;}
 .btn-navy{
   background:var(--navy); border:none; color:#fff; font-weight:600; border-radius:10px;
 }
@@ -225,6 +225,9 @@ body{
   font-family:'IBM Plex Mono'; font-size:10.5px; background:#ffffff1c; border:1px solid #ffffff30;
   padding:4px 9px; border-radius:20px;
 }
+.bin-match-note{font-size:11px; margin-top:8px; padding:6px 10px; border-radius:8px; display:none;}
+.bin-match-note.ok{background:#EEF9F2; color:var(--ok); display:block;}
+.bin-match-note.warn{background:#FFF3DC; color:var(--warn); display:block;}
 
 .form-label-x{font-size:12px; font-weight:600; color:var(--navy); margin-bottom:4px;}
 .form-control, .form-select{border-radius:10px; border:1px solid var(--line); font-size:13.5px;}
@@ -257,21 +260,28 @@ body{
 .opname-result.match{background:#EEF9F2; border:1px solid #BEE6CC;}
 .opname-result.mismatch{background:#FDEEEC; border:1px solid #F3C2B9;}
 
-/* Staging list */
-.staging-item{
-  display:flex; align-items:center; gap:12px; background:#fff; border:1px solid var(--line);
-  border-radius:14px; padding:12px 13px; margin-bottom:9px;
+/* Reservation list */
+.res-card{
+  display:flex; justify-content:space-between; align-items:stretch; gap:10px;
+  background:#fff; border:1px solid var(--line); border-radius:14px; padding:14px; margin-bottom:10px;
 }
-.staging-item .thumb{
-  width:40px;height:40px;border-radius:10px;background:#EEF1F8;color:var(--navy);
-  display:flex;align-items:center;justify-content:center;font-size:16px;flex:none;
+.res-card:active{border-color:var(--orange); background:#FFFBF7;}
+.res-card-left{flex:1; min-width:0;}
+.res-label{font-size:10px; color:var(--orange-dk); font-weight:700; text-transform:uppercase; letter-spacing:.05em; margin-bottom:6px;}
+.res-row{display:flex; justify-content:space-between; gap:8px; font-size:12px; color:var(--muted); padding:2px 0;}
+.res-row b{color:var(--ink); font-weight:600; text-align:right;}
+.res-qty{flex:none; width:66px; display:flex; flex-direction:column; align-items:center; justify-content:center; border-left:1px dashed var(--line); padding-left:10px;}
+.res-qty .lbl{font-size:9.5px; color:var(--muted); font-weight:700; letter-spacing:.03em;}
+.res-qty .val{font-family:'IBM Plex Mono'; font-weight:700; font-size:14px; color:var(--navy); text-align:center; margin-top:2px;}
+
+/* Bin location grid (resdetail) */
+.bin-grid{display:grid; grid-template-columns:repeat(3,1fr); gap:8px; margin-bottom:6px;}
+.bin-chip{
+  border:1.5px solid var(--line); background:#fff; border-radius:10px; padding:11px 4px;
+  text-align:center; font-family:'IBM Plex Mono'; font-size:11.5px; font-weight:600; color:var(--navy);
 }
-.staging-item .t{font-weight:700; font-size:13px;}
-.staging-item .s{font-size:11px; color:var(--muted); margin-top:1px;}
-.staging-item .badge-dest{
-  font-family:'IBM Plex Mono'; font-size:10px; background:#EEF1F8; color:var(--navy);
-  padding:3px 8px; border-radius:20px; white-space:nowrap;
-}
+.bin-chip.active{border-color:var(--orange); background:#FFF3E9; color:var(--orange-dk);}
+
 .search-box{position:relative; margin-bottom:14px;}
 .search-box input{padding-left:36px;}
 .search-box i{position:absolute; left:12px; top:50%; transform:translateY(-50%); color:var(--muted);}
@@ -289,7 +299,6 @@ body{
   border-radius:14px; padding:12px 13px; margin-bottom:9px;
 }
 .riwayat-item .ic{width:34px;height:34px;border-radius:9px;flex:none;display:flex;align-items:center;justify-content:center;font-size:14px;}
-.ic-staging-bg{background:#EEF1F8;color:var(--navy);}
 .ic-gi-bg{background:#FDEBE7;color:var(--bad);}
 .ic-putaway-bg{background:#E4F5EA;color:var(--ok);}
 .ic-opname-bg{background:#FFF3DC;color:var(--warn);}
@@ -321,7 +330,7 @@ footer.f-note{font-size:10.5px; color:var(--muted); text-align:center; margin-to
       </div>
     </div>
     <div class="topbar-sub" id="topbarSub" style="display:none;">
-      <button class="back-btn" onclick="goHome()"><i class="bi bi-arrow-left"></i></button>
+      <button class="back-btn" onclick="goBackTop()"><i class="bi bi-arrow-left"></i></button>
       <div>
         <div class="title" id="topbarTitle">Good Issue</div>
         <div class="sub" id="topbarSubtitle">Scan bin untuk mulai proses</div>
@@ -341,19 +350,15 @@ footer.f-note{font-size:10.5px; color:var(--muted); text-align:center; margin-to
 
     <div class="section-title"><span class="idx">02</span>Akses Cepat</div>
     <div class="access-grid">
-      <button class="access-btn" onclick="openStagingList()">
-        <div class="ic-wrap ic-staging"><i class="bi bi-collection"></i></div>
-        List material staging
-      </button>
-      <button class="access-btn" onclick="openProcess('gi')">
-        <div class="ic-wrap ic-gi"><i class="bi bi-box-arrow-up"></i></div>
-        Good Issue
-      </button>
-      <button class="access-btn" onclick="openProcess('putaway')">
+      <button class="access-btn" onclick="openReservationFlow('putaway')">
         <div class="ic-wrap ic-putaway"><i class="bi bi-box-arrow-in-down"></i></div>
         Putaway
       </button>
-      <button class="access-btn" onclick="openProcess('opname')">
+      <button class="access-btn" onclick="openReservationFlow('gi')">
+        <div class="ic-wrap ic-gi"><i class="bi bi-box-arrow-up"></i></div>
+        Good Issue
+      </button>
+      <button class="access-btn" onclick="openReservationFlow('opname')">
         <div class="ic-wrap ic-opname"><i class="bi bi-clipboard-data"></i></div>
         Stock Opname
       </button>
@@ -364,15 +369,21 @@ footer.f-note{font-size:10.5px; color:var(--muted); text-align:center; margin-to
     <footer class="f-note">WMS Consume · TOTO · Gudang Consume &amp; 2F</footer>
   </div>
 
-  <!-- ===================== PAGE: STAGING LIST ===================== -->
-  <div class="page" id="page-staging">
-    <div class="search-box">
-      <i class="bi bi-search"></i>
-      <input type="text" class="form-control" id="stagingSearch" placeholder="Cari material / kode..." oninput="renderStagingList()">
-    </div>
-    <div class="section-title" style="margin-top:0"><span class="idx">·</span>Material Menunggu Putaway</div>
-    <div id="stagingListWrap"></div>
-    <footer class="f-note">Ketuk item untuk langsung diproses Putaway</footer>
+  <!-- ===================== PAGE: RESERVATION LIST ===================== -->
+  <div class="page" id="page-reslist">
+    <div class="section-title" style="margin-top:6px"><span class="idx">·</span><span id="reslistPilihLabel">Pilih Good Issue</span></div>
+    <div id="reslistWrap"></div>
+  </div>
+
+  <!-- ===================== PAGE: RESERVATION DETAIL + BIN GRID ===================== -->
+  <div class="page" id="page-resdetail">
+    <div class="section-title" style="margin-top:6px"><span class="idx">·</span>Informasi Reservation</div>
+    <div class="card-x stripe" id="resInfoCard"></div>
+
+    <div class="section-title"><span class="idx">·</span><span id="binGroupLabelOut">Informasi Bin</span></div>
+    <div class="bin-grid" id="binGridWrap"></div>
+
+    <button class="btn btn-orange w-100 py-2 mt-3" id="nextToScanBtn" onclick="goToScanFromResDetail()" disabled>Next</button>
   </div>
 
   <!-- ===================== PAGE: PROCESS SCAN ===================== -->
@@ -381,12 +392,15 @@ footer.f-note{font-size:10.5px; color:var(--muted); text-align:center; margin-to
     <!-- STAGE 1: SCAN -->
     <div id="procStage1">
       <div class="section-title" style="margin-top:6px"><span class="idx">QR</span>Scan QR Code Bin</div>
-      <div class="scanner-frame">
+      <div class="scanner-frame" id="scannerFrame">
         <div id="qr-reader"></div>
-        <div class="scan-corners"><span class="tl"></span><span class="tr"></span><span class="bl"></span><span class="br"></span></div>
-        <div class="scan-line"></div>
+        <div class="scan-corners" id="scanCorners"><span class="tl"></span><span class="tr"></span><span class="bl"></span><span class="br"></span></div>
+        <div class="scan-line" id="scanLine"></div>
+        <button type="button" id="activateCamBtn" class="btn btn-orange" style="position:absolute; z-index:5;" onclick="initScanner()">
+          <i class="bi bi-camera-fill me-1"></i>Aktifkan Kamera
+        </button>
       </div>
-      <div class="scan-hint">Arahkan kamera ke QR Code pada label Bin.</div>
+      <div class="scan-hint" id="scanHintText">Ketuk tombol di atas untuk mengaktifkan kamera &amp; scan QR.</div>
 
       <div class="manual-entry">
         <div class="form-label-x">Atau masukkan kode Bin manual</div>
@@ -396,7 +410,7 @@ footer.f-note{font-size:10.5px; color:var(--muted); text-align:center; margin-to
         </div>
       </div>
 
-      <div class="section-title"><span class="idx">·</span>Bin Terakhir Diakses</div>
+      <div class="section-title" id="recentBinTitle"><span class="idx">·</span>Bin Terakhir Diakses</div>
       <div id="recentBinWrap"></div>
     </div>
 
@@ -410,12 +424,14 @@ footer.f-note{font-size:10.5px; color:var(--muted); text-align:center; margin-to
         </div>
         <div class="badge-slot" id="binSlotOut">2 item</div>
       </div>
+      <div class="bin-match-note" id="binMatchNote"></div>
 
-      <div class="section-title"><span class="idx">·</span>Pilih Material &amp; Bin</div>
+      <div class="section-title"><span class="idx">·</span>Pilih Material</div>
       <select class="form-select" id="matSelect" onchange="selectMaterial()">
         <option value="">— Pilih material —</option>
       </select>
 
+      <div class="section-title" style="margin-top:16px;"><span class="idx">·</span>Informasi Bin</div>
       <div class="mat-preview" id="matPreview">
         <div class="thumb"><i class="bi bi-box-seam"></i></div>
         <div class="flex-grow-1">
@@ -438,8 +454,14 @@ footer.f-note{font-size:10.5px; color:var(--muted); text-align:center; margin-to
           <input type="number" id="procQty" value="1" min="0">
           <button onclick="stepQty(1)"><i class="bi bi-plus"></i></button>
         </div>
+
+        <div id="penerimaBlock" style="display:none; margin-top:16px;">
+          <div class="form-label-x">Penerima</div>
+          <input type="text" class="form-control" id="penerimaInput" placeholder="Nama penerima material">
+        </div>
+
         <button class="btn btn-orange w-100 py-2 mt-3" onclick="submitTransaction()" id="submitBtnStepper">
-          <i class="bi bi-check2-circle me-1"></i>Konfirmasi
+          <i class="bi bi-check2-circle me-1"></i>Simpan
         </button>
       </div>
 
@@ -494,12 +516,34 @@ footer.f-note{font-size:10.5px; color:var(--muted); text-align:center; margin-to
       </div>
     </div>
   </div>
+
+  <!-- ===================== MODAL: PILIH MATERIAL ===================== -->
+  <div class="modal fade" id="materialModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content" style="border-radius:16px;">
+        <div class="modal-header">
+          <h6 class="modal-title fw-bold display" style="font-size:15px;">Pilih Material</h6>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          <div class="form-label-x">Nama material</div>
+          <div class="mb-3" style="font-weight:700; font-size:14px;" id="modalMaterialName">-</div>
+          <div class="form-label-x">Option pilih material</div>
+          <select class="form-select" id="modalMaterialOption"></select>
+        </div>
+        <div class="modal-footer" style="border-top:none;">
+          <button type="button" class="btn btn-orange w-100 py-2" onclick="confirmMaterialOption()">Pilih Material</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/html5-qrcode@2.3.8/html5-qrcode.min.js"></script>
 <script>
-/* ================= Mock data ================= */
+/* ================= Mock data: Bin & material contents ================= */
 const BIN_DB = {
   "CS-A-03-02": {
     loc: "Gudang Consume · Rak A · Level 03",
@@ -521,43 +565,100 @@ const BIN_DB = {
       {code:"MAT-10077341", name:"Selang Hidrolik 1/2\"", uom:"MTR", batch:"-", qtySys:25},
       {code:"MAT-10012009", name:"Kabel Ties 200mm", uom:"PACK", batch:"-", qtySys:40}
     ]
-  }
+  },
+  "CS-B-02-01": {
+    loc: "Gudang Consume · Rak B · Level 02",
+    materials: [
+      {code:"MAT-10055671", name:"Motor Servo AC 750W", uom:"PC", batch:"-", qtySys:2}
+    ]
+  },
+  "AA311(A)": { loc:"Gudang Consume · Rak AA · Ganjil", materials:[{code:"MAT-10023456", name:"Sarung Tangan Safety Nitrile L", uom:"BOX", batch:"2405A", qtySys:12}] },
+  "AA313(A)": { loc:"Gudang Consume · Rak AA · Ganjil", materials:[{code:"MAT-10023456", name:"Sarung Tangan Safety Nitrile L", uom:"BOX", batch:"2405A", qtySys:9}] },
+  "AA313(B)": { loc:"Gudang Consume · Rak AA · Ganjil", materials:[{code:"MAT-10023456", name:"Sarung Tangan Safety Nitrile L", uom:"BOX", batch:"2406B", qtySys:5}] },
+  "AA311(B)": { loc:"Gudang Consume · Rak AA · Ganjil", materials:[{code:"MAT-10023456", name:"Sarung Tangan Safety Nitrile L", uom:"BOX", batch:"2406B", qtySys:8}] },
+  "AA315(A)": { loc:"Gudang Consume · Rak AA · Ganjil", materials:[{code:"MAT-10023456", name:"Sarung Tangan Safety Nitrile L", uom:"BOX", batch:"2405A", qtySys:7}] },
+  "AA315(B)": { loc:"Gudang Consume · Rak AA · Ganjil", materials:[{code:"MAT-10023456", name:"Sarung Tangan Safety Nitrile L", uom:"BOX", batch:"2406B", qtySys:4}] }
 };
 const RECENT_BINS = ["CS-A-03-02","CS-A-01-01","OVERFLOW-01"];
 
-let STAGING_ITEMS = [
-  {code:"MAT-10055671", name:"Motor Servo AC 750W", uom:"PC", qty:2, destBin:"CS-B-02-01"},
-  {code:"MAT-10012345", name:"Oli Gear SAE 90", uom:"DRUM", qty:1, destBin:"CS-A-03-02"},
-  {code:"MAT-10099881", name:"Lampu LED Panel 40W", uom:"PC", qty:8, destBin:"CS-C-01-04"},
-  {code:"MAT-10077341", name:"Selang Hidrolik 1/2\"", uom:"MTR", qty:30, destBin:"OVERFLOW-01"}
-];
+/* ================= Mock data: Reservations per process ================= */
+const RESERVATIONS = {
+  gi: [
+    {id:"GI-1001", kode:"MAT-10023456", material:"Sarung Tangan Safety Nitrile L", requester:"Budi Santoso", seksi:"Produksi 2", qty:5, uom:"BOX",
+      materialOptions:[
+        {code:"MAT-10023456", label:"Batch 2405A · Rak AA Ganjil", qtySys:12},
+        {code:"MAT-10023456", label:"Batch 2406B · Rak AA Ganjil", qtySys:8}
+      ],
+      binGroupLabel:"Informasi Bin · AA Ganjil",
+      bins:["AA311(A)","AA313(A)","AA313(B)","AA311(B)","AA315(A)","AA315(B)"]
+    },
+    {id:"GI-1002", kode:"MAT-10088211", material:"Bearing 6204 ZZ", requester:"Sari Wulandari", seksi:"Maintenance", qty:20, uom:"PC",
+      materialOptions:[{code:"MAT-10088211", label:"Rak A · Bin CS-A-03-02", qtySys:50}],
+      binGroupLabel:"Informasi Bin · Rak A",
+      bins:["CS-A-03-02"]
+    },
+    {id:"GI-1003", kode:"MAT-10099002", material:"Filter Oli Hidrolik", requester:"Deni Kurniawan", seksi:"Produksi 1", qty:2, uom:"PC",
+      materialOptions:[{code:"MAT-10099002", label:"Rak A · Bin CS-A-01-01", qtySys:14}],
+      binGroupLabel:"Informasi Bin · Rak A",
+      bins:["CS-A-01-01"]
+    }
+  ],
+  putaway: [
+    {id:"PW-2001", kode:"MAT-10055671", material:"Motor Servo AC 750W", requester:"GR PO 4500123456", seksi:"Gudang Consume", qty:2, uom:"PC",
+      materialOptions:[{code:"MAT-10055671", label:"Tujuan Bin CS-B-02-01", qtySys:2}],
+      binGroupLabel:"Informasi Bin · Rak B",
+      bins:["CS-B-02-01"]
+    },
+    {id:"PW-2002", kode:"MAT-10012345", material:"Oli Gear SAE 90", requester:"GR PO 4500123400", seksi:"Gudang Consume", qty:1, uom:"DRUM",
+      materialOptions:[{code:"MAT-10012345", label:"Tujuan Bin CS-A-03-02", qtySys:1}],
+      binGroupLabel:"Informasi Bin · Rak A",
+      bins:["CS-A-03-02"]
+    },
+    {id:"PW-2003", kode:"MAT-10077341", material:"Selang Hidrolik 1/2\"", requester:"GR PO 4500123388", seksi:"Gudang Consume", qty:30, uom:"MTR",
+      materialOptions:[{code:"MAT-10077341", label:"Tujuan Bin OVERFLOW-01", qtySys:30}],
+      binGroupLabel:"Informasi Bin · Overflow",
+      bins:["OVERFLOW-01"]
+    }
+  ],
+  opname: [
+    {id:"OP-3001", kode:"MAT-10023456", material:"Sarung Tangan Safety Nitrile L", requester:"Jadwal Mingguan", seksi:"Gudang Consume", qty:12, uom:"BOX",
+      materialOptions:[{code:"MAT-10023456", label:"Rak A · Bin CS-A-03-02", qtySys:12}],
+      binGroupLabel:"Informasi Bin · Rak A",
+      bins:["CS-A-03-02"]
+    },
+    {id:"OP-3002", kode:"MAT-10099002", material:"Filter Oli Hidrolik", requester:"Jadwal Mingguan", seksi:"Gudang Consume", qty:14, uom:"PC",
+      materialOptions:[{code:"MAT-10099002", label:"Rak A · Bin CS-A-01-01", qtySys:14}],
+      binGroupLabel:"Informasi Bin · Rak A",
+      bins:["CS-A-01-01"]
+    }
+  ]
+};
 
 let RIWAYAT = [
-  {type:"gi", title:"Good Issue Bin CS-A-03-02", detail:"Sarung Tangan Safety Nitrile L · 3 BOX", time:"08:42"},
+  {type:"gi", title:"Good Issue Bin CS-A-03-02", detail:"Sarung Tangan Safety Nitrile L · 3 BOX · Diterima: Budi Santoso", time:"08:42"},
   {type:"opname", title:"Stock Opname Bin CS-A-01-01", detail:"Sesuai sistem, tidak ada selisih", time:"09:15"},
   {type:"putaway", title:"Putaway Bin CS-B-02-01", detail:"Motor Servo AC 750W · 2 PC", time:"10:02"}
 ];
 
 const PROC_LABELS = {
-  gi:{title:"Good Issue", subtitle:"Scan bin untuk mengeluarkan material", qtyLabel:"Qty Dikeluarkan", icClass:"ic-gi-bg", icon:"bi-box-arrow-up", toast:"Good Issue berhasil disimpan"},
-  putaway: {title:"Putaway", subtitle:"Scan bin tujuan penyimpanan", qtyLabel:"Qty Diletakkan", icClass:"ic-putaway-bg", icon:"bi-box-arrow-in-down", toast:"Putaway berhasil disimpan"},
-  opname: {title:"Stock Opname", subtitle:"Scan bin untuk cek kesesuaian stok", qtyLabel:"", icClass:"ic-opname-bg", icon:"bi-clipboard-data", toast:"Stock Opname tersimpan"},
-  null: {title:"Cari Bin", subtitle:"Scan bin lalu pilih proses", qtyLabel:"Qty", icClass:"ic-staging-bg", icon:"bi-qr-code-scan", toast:"Transaksi tersimpan"}
+  gi:{title:"Good Issue", subtitle:"Scan bin untuk mengeluarkan material", qtyLabel:"Qty Dikeluarkan", toast:"Good Issue berhasil disimpan"},
+  putaway: {title:"Putaway", subtitle:"Scan bin tujuan penyimpanan", qtyLabel:"Qty Diletakkan", toast:"Putaway berhasil disimpan"},
+  opname: {title:"Stock Opname", subtitle:"Scan bin untuk cek kesesuaian stok", qtyLabel:"", toast:"Stock Opname tersimpan"},
+  null: {title:"Cari Bin", subtitle:"Scan bin lalu pilih proses", qtyLabel:"Qty", toast:"Transaksi tersimpan"}
 };
 
-let currentProcess = null;   // 'gi' | 'putaway' | 'opname' | null
-let currentBinCode = null;
-let currentMaterial = null;
-let presetPutawayCode = null; // when coming from staging list
+let currentProcess = null;      // 'gi' | 'putaway' | 'opname' | null
+let currentReservation = null;  // reservation object chosen from list (null when using generic FAB scan)
+let currentMaterialOption = null; // chosen option inside modal
+let selectedBinCode = null;     // bin chip chosen at resdetail page
+let currentBinCode = null;      // bin actually scanned/confirmed
+let currentMaterial = null;     // material chosen at final stage2 select
 
 /* ================= Navigation ================= */
 function goPage(name){
   document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
   document.getElementById('page-'+name).classList.add('active');
   document.querySelectorAll('.nav-btn').forEach(b=>b.classList.remove('active'));
-  const map = {home:'home', process:'process', riwayat:'riwayat'};
-  let navKey = name==='staging' ? 'process' : (name==='process' ? 'process' : name);
-  // only highlight actual bottom nav items
   document.querySelectorAll('.nav-btn').forEach(b=>{
     if(b.dataset.page===name) b.classList.add('active');
   });
@@ -574,15 +675,155 @@ function goPage(name){
 
 function goHome(){
   currentProcess = null;
+  currentReservation = null;
+  currentMaterialOption = null;
+  selectedBinCode = null;
   goPage('home');
   document.querySelector('.nav-btn[data-page="home"]').classList.add('active');
 }
 
-/* Open a specific process (gi / putaway / opname) or null for generic scan */
+/* Generic back button in topbar: context-aware */
+function goBackTop(){
+  const active = document.querySelector('.page.active');
+  const id = active ? active.id : '';
+  if(id==='page-reslist'){ goHome(); return; }
+  if(id==='page-resdetail'){ openReservationFlow(currentProcess); return; }
+  if(id==='page-process'){
+    const stage1Visible = document.getElementById('procStage1').style.display !== 'none';
+    if(stage1Visible){
+      if(currentReservation){ openResDetailPage(); } else { goHome(); }
+    } else {
+      backToScan();
+    }
+    return;
+  }
+  goHome();
+}
+
+/* ================= Step 1: Reservation list ================= */
+function openReservationFlow(type){
+  currentProcess = type;
+  currentReservation = null;
+  currentMaterialOption = null;
+  selectedBinCode = null;
+
+  const info = PROC_LABELS[type];
+  document.getElementById('topbarTitle').textContent = 'List ' + info.title;
+  document.getElementById('topbarSubtitle').textContent = 'Pilih ' + info.title;
+  document.getElementById('topbarSub').style.display='flex';
+  document.getElementById('reslistPilihLabel').textContent = 'Pilih ' + info.title;
+
+  renderReservationList(type);
+  goPage('reslist');
+}
+
+function renderReservationList(type){
+  const arr = RESERVATIONS[type] || [];
+  const wrap = document.getElementById('reslistWrap');
+  if(arr.length===0){
+    wrap.innerHTML = '<div class="empty-state"><i class="bi bi-inbox"></i>Tidak ada reservasi/tugas saat ini.</div>';
+    return;
+  }
+  wrap.innerHTML = arr.map(r=>`
+    <div class="res-card" role="button" onclick="selectReservation('${type}','${r.id}')">
+      <div class="res-card-left">
+        <div class="res-label">Reservation</div>
+        <div class="res-row"><span>Kode material</span><b>${r.kode}</b></div>
+        <div class="res-row"><span>Material</span><b>${r.material}</b></div>
+        <div class="res-row"><span>Requester</span><b>${r.requester}</b></div>
+        <div class="res-row"><span>Seksi</span><b>${r.seksi}</b></div>
+      </div>
+      <div class="res-qty"><div class="lbl">QTY</div><div class="val">${r.qty} ${r.uom}</div></div>
+    </div>`).join('');
+}
+
+/* ================= Step 2: Modal pilih material ================= */
+function selectReservation(type, id){
+  currentProcess = type;
+  currentReservation = (RESERVATIONS[type]||[]).find(r=>r.id===id);
+  if(!currentReservation) return;
+  currentMaterialOption = null;
+
+  document.getElementById('modalMaterialName').textContent = currentReservation.material;
+  const sel = document.getElementById('modalMaterialOption');
+  sel.innerHTML = currentReservation.materialOptions.map((o,i)=>`<option value="${i}">${o.label}</option>`).join('');
+
+  const modalEl = document.getElementById('materialModal');
+  const modal = new bootstrap.Modal(modalEl);
+  modal.show();
+}
+
+function confirmMaterialOption(){
+  if(!currentReservation) return;
+  const idx = document.getElementById('modalMaterialOption').value;
+  currentMaterialOption = currentReservation.materialOptions[idx];
+  const modalEl = document.getElementById('materialModal');
+  const modal = bootstrap.Modal.getInstance(modalEl);
+  if(modal) modal.hide();
+  openResDetailPage();
+}
+
+/* ================= Step 3: Informasi reservation + Informasi bin (grid) ================= */
+function openResDetailPage(){
+  if(!currentReservation) return;
+  const r = currentReservation;
+
+  document.getElementById('resInfoCard').innerHTML = `
+    <div class="res-row"><span>Kode material</span><b>${r.kode}</b></div>
+    <div class="res-row"><span>Material</span><b>${r.material}</b></div>
+    <div class="res-row"><span>Requester</span><b>${r.requester}</b></div>
+    <div class="res-row"><span>Seksi</span><b>${r.seksi}</b></div>
+    <div class="res-row"><span>Qty</span><b>${r.qty} ${r.uom}</b></div>
+    <div class="res-row"><span>Material terpilih</span><b>${currentMaterialOption ? currentMaterialOption.label : '-'}</b></div>
+  `;
+
+  document.getElementById('binGroupLabelOut').textContent = r.binGroupLabel || 'Informasi Bin';
+  const gridWrap = document.getElementById('binGridWrap');
+  gridWrap.innerHTML = r.bins.map(b=>`<button type="button" class="bin-chip" onclick="selectBinOption('${b}', this)">${b}</button>`).join('');
+  selectedBinCode = null;
+  document.getElementById('nextToScanBtn').disabled = true;
+
+  document.getElementById('topbarTitle').textContent = PROC_LABELS[currentProcess].title;
+  document.getElementById('topbarSubtitle').textContent = 'Pilih lokasi bin';
+  document.getElementById('topbarSub').style.display='flex';
+
+  goPage('resdetail');
+}
+
+function selectBinOption(code, el){
+  selectedBinCode = code;
+  document.querySelectorAll('.bin-chip').forEach(b=>b.classList.remove('active'));
+  el.classList.add('active');
+  document.getElementById('nextToScanBtn').disabled = false;
+}
+
+function goToScanFromResDetail(){
+  if(!selectedBinCode) return;
+  document.getElementById('topbarTitle').textContent = PROC_LABELS[currentProcess].title;
+  document.getElementById('topbarSubtitle').textContent = 'Scan bin untuk konfirmasi lokasi';
+  document.getElementById('topbarSub').style.display='flex';
+
+  document.getElementById('procStage1').style.display='block';
+  document.getElementById('procStage2').style.display='none';
+  document.getElementById('manualBinCode').value='';
+  document.getElementById('manualBinCode').placeholder = 'cth. ' + selectedBinCode;
+  document.getElementById('recentBinTitle').style.display='none';
+  document.getElementById('recentBinWrap').innerHTML='';
+  resetScannerUI();
+
+  goPage('process');
+  document.querySelectorAll('.nav-btn').forEach(b=>b.classList.remove('active'));
+  document.querySelector('.nav-btn[data-page="process"]').classList.add('active');
+}
+
+/* ================= Generic scan entry via bottom FAB (no reservation) ================= */
 function openProcess(type){
   currentProcess = type;
+  currentReservation = null;
+  currentMaterialOption = null;
+  selectedBinCode = null;
   currentBinCode = null;
-  currentMaterial = null;
+
   const info = PROC_LABELS[type];
   document.getElementById('topbarTitle').textContent = info.title;
   document.getElementById('topbarSubtitle').textContent = info.subtitle;
@@ -591,20 +832,14 @@ function openProcess(type){
   document.getElementById('procStage1').style.display='block';
   document.getElementById('procStage2').style.display='none';
   document.getElementById('manualBinCode').value='';
+  document.getElementById('manualBinCode').placeholder='cth. CS-A-03-02';
+  document.getElementById('recentBinTitle').style.display='flex';
   renderRecentBins();
+  resetScannerUI();
 
   goPage('process');
   document.querySelectorAll('.nav-btn').forEach(b=>b.classList.remove('active'));
   document.querySelector('.nav-btn[data-page="process"]').classList.add('active');
-  setTimeout(initScanner, 150);
-}
-
-function openStagingList(){
-  document.getElementById('topbarTitle').textContent = 'List Material Staging';
-  document.getElementById('topbarSubtitle').textContent = 'Material menunggu proses Putaway';
-  document.getElementById('topbarSub').style.display='flex';
-  goPage('staging');
-  renderStagingList();
 }
 
 /* ================= Toast ================= */
@@ -617,9 +852,35 @@ function showToast(msg){
 /* ================= QR Scanner ================= */
 let html5QrCode = null;
 let scannerRunning = false;
+
+function isSecureEnough(){
+  return window.isSecureContext && (location.protocol === 'https:' || location.hostname === 'localhost' || location.hostname === '127.0.0.1');
+}
+
+function showScanError(msg){
+  document.getElementById('qr-reader').innerHTML =
+    '<div class="text-center px-4" style="color:#B9C3DD;font-size:12px;"><i class="bi bi-camera-video-off fs-3 d-block mb-2"></i>'+msg+'<br>Gunakan input manual di bawah.</div>';
+  document.getElementById('activateCamBtn').style.display='none';
+  document.getElementById('scanCorners').style.display='none';
+  document.getElementById('scanLine').style.display='none';
+}
+
 function initScanner(){
   const el = document.getElementById('qr-reader');
   if(!el || scannerRunning) return;
+
+  if(!isSecureEnough()){
+    showScanError('Kamera butuh koneksi HTTPS (atau localhost). File ini sepertinya dibuka langsung dari aplikasi lain (mis. WhatsApp/File Manager) sehingga browser memblokir akses kamera tanpa pop-up. Upload file ke hosting HTTPS lalu buka di Chrome/Safari.');
+    return;
+  }
+  if(!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia){
+    showScanError('Browser ini tidak mendukung akses kamera.');
+    return;
+  }
+
+  document.getElementById('activateCamBtn').style.display='none';
+  document.getElementById('scanHintText').textContent = 'Mengaktifkan kamera...';
+
   try{
     html5QrCode = new Html5Qrcode("qr-reader");
     html5QrCode.start(
@@ -627,20 +888,38 @@ function initScanner(){
       { fps: 10, qrbox: { width: 220, height: 220 } },
       (decodedText)=>{ scanBin(decodedText); },
       ()=>{}
-    ).then(()=>{ scannerRunning = true; })
-    .catch(()=>{
-      document.getElementById('qr-reader').innerHTML =
-        '<div class="text-center px-4" style="color:#B9C3DD;font-size:12px;"><i class="bi bi-camera-video-off fs-3 d-block mb-2"></i>Kamera tidak tersedia / izin ditolak.<br>Gunakan input manual di bawah.</div>';
+    ).then(()=>{
+      scannerRunning = true;
+      document.getElementById('scanCorners').style.display='block';
+      document.getElementById('scanLine').style.display='block';
+      document.getElementById('scanHintText').textContent = 'Arahkan kamera ke QR Code pada label Bin.';
+    })
+    .catch((err)=>{
+      let msg = 'Kamera tidak tersedia / izin ditolak.';
+      if(err && err.name === 'NotAllowedError') msg = 'Izin kamera ditolak. Aktifkan izin kamera di pengaturan browser lalu coba lagi.';
+      else if(err && err.name === 'NotFoundError') msg = 'Kamera tidak ditemukan di perangkat ini.';
+      showScanError(msg);
     });
-  }catch(e){}
+  }catch(e){
+    showScanError('Terjadi kesalahan saat mengakses kamera.');
+  }
 }
 function stopScanner(){
   if(html5QrCode && scannerRunning){
     html5QrCode.stop().then(()=>{ scannerRunning=false; html5QrCode.clear(); }).catch(()=>{});
   }
 }
+function resetScannerUI(){
+  stopScanner();
+  const el = document.getElementById('qr-reader');
+  if(el) el.innerHTML='';
+  document.getElementById('activateCamBtn').style.display='inline-flex';
+  document.getElementById('scanCorners').style.display='none';
+  document.getElementById('scanLine').style.display='none';
+  document.getElementById('scanHintText').textContent = 'Ketuk tombol di atas untuk mengaktifkan kamera & scan QR.';
+}
 
-/* ================= Recent bins ================= */
+/* ================= Recent bins (only for generic FAB scan) ================= */
 function renderRecentBins(){
   const wrap = document.getElementById('recentBinWrap');
   wrap.innerHTML = '';
@@ -659,7 +938,7 @@ function renderRecentBins(){
   });
 }
 
-/* ================= Scan result render ================= */
+/* ================= Scan result render (stage 2) ================= */
 function scanBin(code){
   code = (code||'').trim().toUpperCase();
   if(!code){ showToast('Masukkan atau scan kode bin terlebih dahulu'); return; }
@@ -671,6 +950,20 @@ function scanBin(code){
   document.getElementById('binLocOut').textContent = data.loc;
   document.getElementById('binSlotOut').textContent = data.materials.length+' item';
 
+  const noteEl = document.getElementById('binMatchNote');
+  if(selectedBinCode){
+    if(resolvedCode === selectedBinCode){
+      noteEl.className = 'bin-match-note ok';
+      noteEl.textContent = 'Sesuai dengan bin yang dipilih sebelumnya.';
+    } else {
+      noteEl.className = 'bin-match-note warn';
+      noteEl.textContent = 'Bin yang discan berbeda dari pilihan sebelumnya ('+selectedBinCode+'). Periksa kembali lokasi fisik.';
+    }
+  } else {
+    noteEl.className = 'bin-match-note';
+    noteEl.textContent = '';
+  }
+
   const sel = document.getElementById('matSelect');
   sel.innerHTML = '<option value="">— Pilih material —</option>';
   data.materials.forEach((m,i)=>{
@@ -681,22 +974,23 @@ function scanBin(code){
   document.getElementById('qtyBlockStepper').style.display='none';
   document.getElementById('qtyBlockOpname').style.display='none';
   document.getElementById('opResultBox').style.display='none';
+  document.getElementById('penerimaBlock').style.display='none';
 
   document.getElementById('procStage1').style.display='none';
   document.getElementById('procStage2').style.display='block';
 
-  // auto preselect material if coming from staging list
-  if(presetPutawayCode){
-    const idx = data.materials.findIndex(m=>m.code===presetPutawayCode);
+  // auto preselect material matching the reservation's material code, if any
+  if(currentReservation){
+    const wantedCode = (currentMaterialOption && currentMaterialOption.code) || currentReservation.kode;
+    const idx = data.materials.findIndex(m=>m.code===wantedCode);
     if(idx>=0){ sel.value = idx; selectMaterial(); }
-    presetPutawayCode = null;
   }
 }
 
 function backToScan(){
   document.getElementById('procStage1').style.display='block';
   document.getElementById('procStage2').style.display='none';
-  setTimeout(initScanner,150);
+  resetScannerUI();
 }
 
 function selectMaterial(){
@@ -705,11 +999,13 @@ function selectMaterial(){
   const preview = document.getElementById('matPreview');
   const stepperBlock = document.getElementById('qtyBlockStepper');
   const opnameBlock = document.getElementById('qtyBlockOpname');
+  const penerimaBlock = document.getElementById('penerimaBlock');
 
   if(idx===''){
     preview.style.display='none';
     stepperBlock.style.display='none';
     opnameBlock.style.display='none';
+    penerimaBlock.style.display='none';
     currentMaterial = null;
     return;
   }
@@ -728,6 +1024,7 @@ function selectMaterial(){
   const type = currentProcess;
   opnameBlock.style.display='none';
   stepperBlock.style.display='none';
+  penerimaBlock.style.display='none';
   document.getElementById('opResultBox').style.display='none';
 
   if(type==='opname'){
@@ -735,11 +1032,14 @@ function selectMaterial(){
     document.getElementById('opSysQty').textContent = m.qtySys;
     document.getElementById('opActualQty').value='';
   } else {
-    // gi / putaway / generic(null) -> default to Good Issue style stepper, user can pick action if generic
     stepperBlock.style.display='block';
     const label = (type && PROC_LABELS[type]) ? PROC_LABELS[type].qtyLabel : 'Qty Diproses';
     document.getElementById('qtyStepperLabel').textContent = label;
-    document.getElementById('procQty').value = 1;
+    document.getElementById('procQty').value = (currentReservation ? currentReservation.qty : 1);
+    if(type==='gi'){
+      penerimaBlock.style.display='block';
+      document.getElementById('penerimaInput').value = currentReservation ? currentReservation.requester : '';
+    }
   }
 }
 
@@ -751,27 +1051,36 @@ function stepQty(dir){
   input.value = v;
 }
 
-/* ================= Submit transactions ================= */
+/* ================= Submit transactions (Good Issue / Putaway) ================= */
 function submitTransaction(){
   if(!currentMaterial){ showToast('Pilih material terlebih dahulu'); return; }
   const qty = parseInt(document.getElementById('procQty').value||'0',10);
   if(qty<=0){ showToast('Qty harus lebih dari 0'); return; }
 
   const type = currentProcess || 'gi';
+  let penerima = '';
+  if(type==='gi'){
+    penerima = document.getElementById('penerimaInput').value.trim();
+    if(!penerima){ showToast('Isi nama penerima terlebih dahulu'); return; }
+  }
+
   const info = PROC_LABELS[type] || PROC_LABELS['gi'];
   const now = new Date();
   const timeStr = now.getHours().toString().padStart(2,'0')+':'+now.getMinutes().toString().padStart(2,'0');
 
+  let detail = currentMaterial.name+' · '+qty+' '+currentMaterial.uom;
+  if(type==='gi' && penerima){ detail += ' · Diterima: '+penerima; }
+
   RIWAYAT.unshift({
     type: type,
     title: info.title+' Bin '+currentBinCode,
-    detail: currentMaterial.name+' · '+qty+' '+currentMaterial.uom,
+    detail: detail,
     time: timeStr
   });
 
-  // remove from staging list if putaway
-  if(type==='putaway'){
-    STAGING_ITEMS = STAGING_ITEMS.filter(s=>s.code!==currentMaterial.code);
+  // remove the reservation from its list once processed
+  if(currentReservation && RESERVATIONS[type]){
+    RESERVATIONS[type] = RESERVATIONS[type].filter(r=>r.id!==currentReservation.id);
   }
 
   showToast(info.toast);
@@ -807,31 +1116,10 @@ function runOpnameCheck(){
     RIWAYAT.unshift({type:'opname', title:'Stock Opname Bin '+currentBinCode, detail:currentMaterial.name+' · selisih '+(diff>0?'+':'')+diff+' '+currentMaterial.uom, time:timeStr});
     showToast('Selisih ditemukan — cek notifikasi di bawah.');
   }
-}
 
-/* ================= Staging list ================= */
-const STAGING_ICONS = {"PC":"bi-box-seam","BOX":"bi-box-seam","DRUM":"bi-droplet-half","MTR":"bi-bar-chart-steps","PACK":"bi-boxes"};
-function renderStagingList(){
-  const q = (document.getElementById('stagingSearch')?.value||'').toLowerCase();
-  const wrap = document.getElementById('stagingListWrap');
-  const filtered = STAGING_ITEMS.filter(s=> s.name.toLowerCase().includes(q) || s.code.toLowerCase().includes(q));
-  if(filtered.length===0){
-    wrap.innerHTML = `<div class="empty-state"><i class="bi bi-inbox"></i>Tidak ada material staging ditemukan.</div>`;
-    return;
+  if(currentReservation && RESERVATIONS['opname']){
+    RESERVATIONS['opname'] = RESERVATIONS['opname'].filter(r=>r.id!==currentReservation.id);
   }
-  wrap.innerHTML = filtered.map(s=>`
-    <div class="staging-item" role="button" onclick="processStagingItem('${s.code}')">
-      <div class="thumb"><i class="bi ${STAGING_ICONS[s.uom]||'bi-box-seam'}"></i></div>
-      <div class="flex-grow-1">
-        <div class="t">${s.name}</div>
-        <div class="s mono">${s.code} · ${s.qty} ${s.uom}</div>
-      </div>
-      <div class="badge-dest">${s.destBin}</div>
-    </div>`).join('');
-}
-function processStagingItem(code){
-  presetPutawayCode = code;
-  openProcess('putaway');
 }
 
 /* ================= Riwayat ================= */
