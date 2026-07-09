@@ -418,7 +418,7 @@ footer.f-note{font-size:10.5px; color:var(--muted); text-align:center; margin-to
     <div class="section-title" style="margin-top:6px"><span class="idx">·</span>Informasi Reservation</div>
     <div class="res-header-card" id="matlistHeaderCard"></div>
 
-    <div class="section-title"><span class="idx">·</span>Pilih</div>
+    <div class="section-title"><span class="idx">·</span>Pilih Material</div>
     <div class="mat-table-wrap">
       <table class="mat-table">
         <thead>
@@ -815,7 +815,7 @@ function openMatListPage(type, id){
       <td><div class="mcode">${m.code}</div></td>
       <td><div class="mname">${m.name}</div></td>
       <td><div class="mqty">${m.qty} ${m.uom}</div></td>
-      <td><button type="button" class="btn-pilih-mat" onclick="chooseMaterialFromList(${i})">Pilih Material</button></td>
+      <td><button type="button" class="btn-pilih-mat" onclick="chooseMaterialFromList(${i})">Pilih</button></td>
     </tr>`).join('');
 
   document.getElementById('topbarTitle').textContent = PROC_LABELS[currentProcess].title;
