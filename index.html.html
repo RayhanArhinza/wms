@@ -287,6 +287,32 @@ body{
   text-align:center; font-family:'IBM Plex Mono'; font-size:11.5px; font-weight:600; color:var(--navy);
 }
 .bin-chip.active{border-color:var(--orange); background:#FFF3E9; color:var(--orange-dk);}
+.bin-chip.indicator{
+  display:flex; flex-direction:column; align-items:center; gap:3px; padding:12px 4px;
+  border-color:var(--line); background:#FAFAFC; color:var(--navy); cursor:default;
+}
+.bin-chip.indicator i{color:var(--orange-dk); font-size:14px;}
+.bin-indicator-hint{font-size:11px; color:var(--muted); margin:-4px 0 10px;}
+
+/* Material list (table) */
+.mat-table-wrap{background:#fff; border:1px solid var(--line); border-radius:14px; overflow:hidden;}
+.mat-table{width:100%; border-collapse:collapse; font-size:12px;}
+.mat-table thead th{
+  background:#F7F8FB; color:var(--muted); font-weight:700; font-size:10.5px; text-transform:uppercase;
+  letter-spacing:.03em; padding:10px 10px; text-align:left; border-bottom:1px solid var(--line);
+}
+.mat-table tbody td{padding:11px 10px; border-bottom:1px solid var(--line); vertical-align:middle;}
+.mat-table tbody tr:last-child td{border-bottom:none;}
+.mat-table .mcode{font-family:'IBM Plex Mono'; font-size:11px; color:var(--orange-dk); font-weight:600;}
+.mat-table .mname{font-weight:600; font-size:12.5px; margin-top:1px;}
+.mat-table .mqty{font-family:'IBM Plex Mono'; font-weight:700; color:var(--navy); white-space:nowrap;}
+.btn-pilih-mat{
+  background:var(--navy); border:none; color:#fff; font-weight:600; font-size:11px;
+  border-radius:8px; padding:7px 10px; white-space:nowrap;
+}
+.res-header-card{
+  background:var(--card); border:1px solid var(--line); border-radius:14px; padding:14px; margin-bottom:16px;
+}
 
 .search-box{position:relative; margin-bottom:14px;}
 .search-box input{padding-left:36px;}
@@ -387,15 +413,37 @@ footer.f-note{font-size:10.5px; color:var(--muted); text-align:center; margin-to
     <div id="reslistWrap"></div>
   </div>
 
-  <!-- ===================== PAGE: RESERVATION DETAIL + BIN GRID ===================== -->
+  <!-- ===================== PAGE: MATERIAL LIST (per reservation) ===================== -->
+  <div class="page" id="page-matlist">
+    <div class="section-title" style="margin-top:6px"><span class="idx">·</span>Informasi Reservation</div>
+    <div class="res-header-card" id="matlistHeaderCard"></div>
+
+    <div class="section-title"><span class="idx">·</span>Pilih Material</div>
+    <div class="mat-table-wrap">
+      <table class="mat-table">
+        <thead>
+          <tr>
+            <th>Kode Material</th>
+            <th>Nama Material</th>
+            <th>Qty Reservasi</th>
+            <th>Aksi</th>
+          </tr>
+        </thead>
+        <tbody id="matlistTbody"></tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- ===================== PAGE: RESERVATION DETAIL + BIN LOCATION ===================== -->
   <div class="page" id="page-resdetail">
     <div class="section-title" style="margin-top:6px"><span class="idx">·</span>Informasi Reservation</div>
     <div class="card-x stripe" id="resInfoCard"></div>
 
     <div class="section-title"><span class="idx">·</span><span id="binGroupLabelOut">Informasi Bin</span></div>
+    <div class="bin-indicator-hint">Lokasi material ada di salah satu bin berikut. Cari materialnya secara fisik, lalu tekan Next.</div>
     <div class="bin-grid" id="binGridWrap"></div>
 
-    <button class="btn btn-orange w-100 py-2 mt-3" id="nextToScanBtn" onclick="goToScanFromResDetail()" disabled>Next</button>
+    <button class="btn btn-orange w-100 py-2 mt-3" id="nextToScanBtn" onclick="goToScanFromResDetail()">Next</button>
   </div>
 
   <!-- ===================== PAGE: PROCESS SCAN ===================== -->
@@ -529,26 +577,6 @@ footer.f-note{font-size:10.5px; color:var(--muted); text-align:center; margin-to
     </div>
   </div>
 
-  <!-- ===================== MODAL: PILIH MATERIAL ===================== -->
-  <div class="modal fade" id="materialModal" tabindex="-1" aria-hidden="true">
-    <div class="modal-dialog modal-dialog-centered">
-      <div class="modal-content" style="border-radius:16px;">
-        <div class="modal-header">
-          <h6 class="modal-title fw-bold display" style="font-size:15px;">Pilih Material</h6>
-          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-        </div>
-        <div class="modal-body">
-          <div class="form-label-x">Nama material</div>
-          <div class="mb-3" style="font-weight:700; font-size:14px;" id="modalMaterialName">-</div>
-          <div class="form-label-x">Option pilih material</div>
-          <select class="form-select" id="modalMaterialOption"></select>
-        </div>
-        <div class="modal-footer" style="border-top:none;">
-          <button type="button" class="btn btn-orange w-100 py-2" onclick="confirmMaterialOption()">Pilih Material</button>
-        </div>
-      </div>
-    </div>
-  </div>
 
 </div>
 
@@ -593,55 +621,71 @@ const BIN_DB = {
 };
 const RECENT_BINS = ["CS-A-03-02","CS-A-01-01","OVERFLOW-01"];
 
-/* ================= Mock data: Reservations per process ================= */
+/* ================= Mock data: Reservations per process =================
+   Each reservation now only carries header info (no reservasi, tanggal,
+   requester, seksi). The materials belonging to that reservation are
+   listed separately and picked on the "Pilih Material" page. */
 const RESERVATIONS = {
   gi: [
-    {id:"GI-1001", kode:"MAT-10023456", material:"Sarung Tangan Safety Nitrile L", requester:"Budi Santoso", seksi:"Produksi 2", qty:5, uom:"BOX",
-      materialOptions:[
-        {code:"MAT-10023456", label:"Batch 2405A · Rak AA Ganjil", qtySys:12},
-        {code:"MAT-10023456", label:"Batch 2406B · Rak AA Ganjil", qtySys:8}
-      ],
-      binGroupLabel:"Informasi Bin · AA Ganjil",
-      bins:["AA311(A)","AA313(A)","AA313(B)","AA311(B)","AA315(A)","AA315(B)"]
+    {id:"GI-1001", noReservasi:"0000148428", tanggal:"09/07/2026", requester:"Budi Santoso", seksi:"Produksi 2",
+      materials:[
+        {code:"MAT-10023456", name:"Sarung Tangan Safety Nitrile L", qty:5, uom:"BOX",
+          binGroupLabel:"Informasi Bin · AA Ganjil",
+          bins:["AA311(A)","AA313(A)","AA313(B)","AA311(B)","AA315(A)","AA315(B)"]}
+      ]
     },
-    {id:"GI-1002", kode:"MAT-10088211", material:"Bearing 6204 ZZ", requester:"Sari Wulandari", seksi:"Maintenance", qty:20, uom:"PC",
-      materialOptions:[{code:"MAT-10088211", label:"Rak A · Bin CS-A-03-02", qtySys:50}],
-      binGroupLabel:"Informasi Bin · Rak A",
-      bins:["CS-A-03-02"]
+    {id:"GI-1002", noReservasi:"0000148431", tanggal:"09/07/2026", requester:"Sari Wulandari", seksi:"Maintenance",
+      materials:[
+        {code:"MAT-10088211", name:"Bearing 6204 ZZ", qty:20, uom:"PC",
+          binGroupLabel:"Informasi Bin · Rak A",
+          bins:["CS-A-03-02"]}
+      ]
     },
-    {id:"GI-1003", kode:"MAT-10099002", material:"Filter Oli Hidrolik", requester:"Deni Kurniawan", seksi:"Produksi 1", qty:2, uom:"PC",
-      materialOptions:[{code:"MAT-10099002", label:"Rak A · Bin CS-A-01-01", qtySys:14}],
-      binGroupLabel:"Informasi Bin · Rak A",
-      bins:["CS-A-01-01"]
+    {id:"GI-1003", noReservasi:"0000148437", tanggal:"08/07/2026", requester:"Deni Kurniawan", seksi:"Produksi 1",
+      materials:[
+        {code:"MAT-10099002", name:"Filter Oli Hidrolik", qty:2, uom:"PC",
+          binGroupLabel:"Informasi Bin · Rak A",
+          bins:["CS-A-01-01"]}
+      ]
     }
   ],
   putaway: [
-    {id:"PW-2001", kode:"MAT-10055671", material:"Motor Servo AC 750W", requester:"GR PO 4500123456", seksi:"Gudang Consume", qty:2, uom:"PC",
-      materialOptions:[{code:"MAT-10055671", label:"Tujuan Bin CS-B-02-01", qtySys:2}],
-      binGroupLabel:"Informasi Bin · Rak B",
-      bins:["CS-B-02-01"]
+    {id:"PW-2001", noReservasi:"4500123456", tanggal:"09/07/2026", requester:"Andi R.", seksi:"Gudang Consume",
+      materials:[
+        {code:"MAT-10055671", name:"Motor Servo AC 750W", qty:2, uom:"PC",
+          binGroupLabel:"Informasi Bin · Rak B",
+          bins:["CS-B-02-01"]}
+      ]
     },
-    {id:"PW-2002", kode:"MAT-10012345", material:"Oli Gear SAE 90", requester:"GR PO 4500123400", seksi:"Gudang Consume", qty:1, uom:"DRUM",
-      materialOptions:[{code:"MAT-10012345", label:"Tujuan Bin CS-A-03-02", qtySys:1}],
-      binGroupLabel:"Informasi Bin · Rak A",
-      bins:["CS-A-03-02"]
+    {id:"PW-2002", noReservasi:"4500123400", tanggal:"09/07/2026", requester:"Andi R.", seksi:"Gudang Consume",
+      materials:[
+        {code:"MAT-10012345", name:"Oli Gear SAE 90", qty:1, uom:"DRUM",
+          binGroupLabel:"Informasi Bin · Rak A",
+          bins:["CS-A-03-02"]}
+      ]
     },
-    {id:"PW-2003", kode:"MAT-10077341", material:"Selang Hidrolik 1/2\"", requester:"GR PO 4500123388", seksi:"Gudang Consume", qty:30, uom:"MTR",
-      materialOptions:[{code:"MAT-10077341", label:"Tujuan Bin OVERFLOW-01", qtySys:30}],
-      binGroupLabel:"Informasi Bin · Overflow",
-      bins:["OVERFLOW-01"]
+    {id:"PW-2003", noReservasi:"4500123388", tanggal:"08/07/2026", requester:"Andi R.", seksi:"Gudang Consume",
+      materials:[
+        {code:"MAT-10077341", name:"Selang Hidrolik 1/2\"", qty:30, uom:"MTR",
+          binGroupLabel:"Informasi Bin · Overflow",
+          bins:["OVERFLOW-01"]}
+      ]
     }
   ],
   opname: [
-    {id:"OP-3001", kode:"MAT-10023456", material:"Sarung Tangan Safety Nitrile L", requester:"Jadwal Mingguan", seksi:"Gudang Consume", qty:12, uom:"BOX",
-      materialOptions:[{code:"MAT-10023456", label:"Rak A · Bin CS-A-03-02", qtySys:12}],
-      binGroupLabel:"Informasi Bin · Rak A",
-      bins:["CS-A-03-02"]
+    {id:"OP-3001", noReservasi:"0000019912", tanggal:"09/07/2026", requester:"Jadwal Mingguan", seksi:"Gudang Consume",
+      materials:[
+        {code:"MAT-10023456", name:"Sarung Tangan Safety Nitrile L", qty:12, uom:"BOX",
+          binGroupLabel:"Informasi Bin · Rak A",
+          bins:["CS-A-03-02"]}
+      ]
     },
-    {id:"OP-3002", kode:"MAT-10099002", material:"Filter Oli Hidrolik", requester:"Jadwal Mingguan", seksi:"Gudang Consume", qty:14, uom:"PC",
-      materialOptions:[{code:"MAT-10099002", label:"Rak A · Bin CS-A-01-01", qtySys:14}],
-      binGroupLabel:"Informasi Bin · Rak A",
-      bins:["CS-A-01-01"]
+    {id:"OP-3002", noReservasi:"0000019913", tanggal:"09/07/2026", requester:"Jadwal Mingguan", seksi:"Gudang Consume",
+      materials:[
+        {code:"MAT-10099002", name:"Filter Oli Hidrolik", qty:14, uom:"PC",
+          binGroupLabel:"Informasi Bin · Rak A",
+          bins:["CS-A-01-01"]}
+      ]
     }
   ]
 };
@@ -653,16 +697,15 @@ let RIWAYAT = [
 ];
 
 const PROC_LABELS = {
-  gi:{title:"Good Issue", subtitle:"Scan bin untuk mengeluarkan material", qtyLabel:"Qty Dikeluarkan", toast:"Good Issue berhasil disimpan"},
-  putaway: {title:"Putaway", subtitle:"Scan bin tujuan penyimpanan", qtyLabel:"Qty Diletakkan", toast:"Putaway berhasil disimpan"},
-  opname: {title:"Stock Opname", subtitle:"Scan bin untuk cek kesesuaian stok", qtyLabel:"", toast:"Stock Opname tersimpan"},
-  null: {title:"Cari Material / Bin", subtitle:"Scan bin untuk melihat informasi material", qtyLabel:"", toast:""}
+  gi:{title:"Good Issue", subtitle:"Scan bin untuk mengeluarkan material", qtyLabel:"Qty Dikeluarkan", toast:"Good Issue berhasil disimpan", refLabel:"No. Reservasi"},
+  putaway: {title:"Putaway", subtitle:"Scan bin tujuan penyimpanan", qtyLabel:"Qty Diletakkan", toast:"Putaway berhasil disimpan", refLabel:"No. GR"},
+  opname: {title:"Stock Opname", subtitle:"Scan bin untuk cek kesesuaian stok", qtyLabel:"", toast:"Stock Opname tersimpan", refLabel:"No. Opname"},
+  null: {title:"Cari Material / Bin", subtitle:"Scan bin untuk melihat informasi material", qtyLabel:"", toast:"", refLabel:"No. Referensi"}
 };
 
 let currentProcess = null;      // 'gi' | 'putaway' | 'opname' | null
 let currentReservation = null;  // reservation object chosen from list (null when using generic FAB scan)
 let currentMaterialOption = null; // chosen option inside modal
-let selectedBinCode = null;     // bin chip chosen at resdetail page
 let currentBinCode = null;      // bin actually scanned/confirmed
 let currentMaterial = null;     // material chosen at final stage2 select
 
@@ -689,7 +732,6 @@ function goHome(){
   currentProcess = null;
   currentReservation = null;
   currentMaterialOption = null;
-  selectedBinCode = null;
   goPage('home');
   document.querySelector('.nav-btn[data-page="home"]').classList.add('active');
 }
@@ -699,7 +741,8 @@ function goBackTop(){
   const active = document.querySelector('.page.active');
   const id = active ? active.id : '';
   if(id==='page-reslist'){ goHome(); return; }
-  if(id==='page-resdetail'){ openReservationFlow(currentProcess); return; }
+  if(id==='page-matlist'){ openReservationFlow(currentProcess); return; }
+  if(id==='page-resdetail'){ openMatListPage(); return; }
   if(id==='page-process'){
     const stage1Visible = document.getElementById('procStage1').style.display !== 'none';
     if(stage1Visible){
@@ -717,7 +760,6 @@ function openReservationFlow(type){
   currentProcess = type;
   currentReservation = null;
   currentMaterialOption = null;
-  selectedBinCode = null;
 
   const info = PROC_LABELS[type];
   document.getElementById('topbarTitle').textContent = 'List ' + info.title;
@@ -732,85 +774,96 @@ function openReservationFlow(type){
 function renderReservationList(type){
   const arr = RESERVATIONS[type] || [];
   const wrap = document.getElementById('reslistWrap');
+  const refLabel = (PROC_LABELS[type] || PROC_LABELS[null]).refLabel;
   if(arr.length===0){
     wrap.innerHTML = '<div class="empty-state"><i class="bi bi-inbox"></i>Tidak ada reservasi/tugas saat ini.</div>';
     return;
   }
   wrap.innerHTML = arr.map(r=>`
-    <div class="res-card" role="button" onclick="selectReservation('${type}','${r.id}')">
+    <div class="res-card" role="button" onclick="openMatListPage('${type}','${r.id}')">
       <div class="res-card-left">
         <div class="res-label">Reservation</div>
-        <div class="res-row"><span>Kode material</span><b>${r.kode}</b></div>
-        <div class="res-row"><span>Material</span><b>${r.material}</b></div>
+        <div class="res-row"><span>${refLabel}</span><b>${r.noReservasi}</b></div>
+        <div class="res-row"><span>Tanggal</span><b>${r.tanggal}</b></div>
         <div class="res-row"><span>Requester</span><b>${r.requester}</b></div>
         <div class="res-row"><span>Seksi</span><b>${r.seksi}</b></div>
       </div>
-      <div class="res-qty"><div class="lbl">QTY</div><div class="val">${r.qty} ${r.uom}</div></div>
+      <i class="bi bi-chevron-right align-self-center" style="color:var(--muted)"></i>
     </div>`).join('');
 }
 
-/* ================= Step 2: Modal pilih material ================= */
-function selectReservation(type, id){
-  currentProcess = type;
-  currentReservation = (RESERVATIONS[type]||[]).find(r=>r.id===id);
+/* ================= Step 2: Pilih Material (table) ================= */
+function openMatListPage(type, id){
+  if(type){ currentProcess = type; }
+  if(id){ currentReservation = (RESERVATIONS[currentProcess]||[]).find(r=>r.id===id); }
   if(!currentReservation) return;
   currentMaterialOption = null;
 
-  document.getElementById('modalMaterialName').textContent = currentReservation.material;
-  const sel = document.getElementById('modalMaterialOption');
-  sel.innerHTML = currentReservation.materialOptions.map((o,i)=>`<option value="${i}">${o.label}</option>`).join('');
+  const r = currentReservation;
+  const refLabel = (PROC_LABELS[currentProcess] || PROC_LABELS[null]).refLabel;
 
-  const modalEl = document.getElementById('materialModal');
-  const modal = new bootstrap.Modal(modalEl);
-  modal.show();
+  document.getElementById('matlistHeaderCard').innerHTML = `
+    <div class="res-row"><span>${refLabel}</span><b>${r.noReservasi}</b></div>
+    <div class="res-row"><span>Tanggal</span><b>${r.tanggal}</b></div>
+    <div class="res-row"><span>Requester</span><b>${r.requester}</b></div>
+    <div class="res-row"><span>Seksi</span><b>${r.seksi}</b></div>
+  `;
+
+  const tbody = document.getElementById('matlistTbody');
+  tbody.innerHTML = r.materials.map((m,i)=>`
+    <tr>
+      <td><div class="mcode">${m.code}</div></td>
+      <td><div class="mname">${m.name}</div></td>
+      <td><div class="mqty">${m.qty} ${m.uom}</div></td>
+      <td><button type="button" class="btn-pilih-mat" onclick="chooseMaterialFromList(${i})">Pilih Material</button></td>
+    </tr>`).join('');
+
+  document.getElementById('topbarTitle').textContent = PROC_LABELS[currentProcess].title;
+  document.getElementById('topbarSubtitle').textContent = 'Pilih material dari reservasi';
+  document.getElementById('topbarSub').style.display='flex';
+
+  goPage('matlist');
 }
 
-function confirmMaterialOption(){
+function chooseMaterialFromList(idx){
   if(!currentReservation) return;
-  const idx = document.getElementById('modalMaterialOption').value;
-  currentMaterialOption = currentReservation.materialOptions[idx];
-  const modalEl = document.getElementById('materialModal');
-  const modal = bootstrap.Modal.getInstance(modalEl);
-  if(modal) modal.hide();
+  currentMaterialOption = currentReservation.materials[idx];
   openResDetailPage();
 }
 
-/* ================= Step 3: Informasi reservation + Informasi bin (grid) ================= */
+/* ================= Step 3: Informasi reservation + Informasi bin (indicator only) ================= */
 function openResDetailPage(){
-  if(!currentReservation) return;
+  if(!currentReservation || !currentMaterialOption) return;
   const r = currentReservation;
+  const m = currentMaterialOption;
+  const refLabel = (PROC_LABELS[currentProcess] || PROC_LABELS[null]).refLabel;
 
   document.getElementById('resInfoCard').innerHTML = `
-    <div class="res-row"><span>Kode material</span><b>${r.kode}</b></div>
-    <div class="res-row"><span>Material</span><b>${r.material}</b></div>
+    <div class="res-row"><span>${refLabel}</span><b>${r.noReservasi}</b></div>
+    <div class="res-row"><span>Tanggal</span><b>${r.tanggal}</b></div>
+    <div class="res-row"><span>Kode material</span><b>${m.code}</b></div>
+    <div class="res-row"><span>Material</span><b>${m.name}</b></div>
+    <div class="res-row"><span>Qty</span><b>${m.qty} ${m.uom}</b></div>
     <div class="res-row"><span>Requester</span><b>${r.requester}</b></div>
     <div class="res-row"><span>Seksi</span><b>${r.seksi}</b></div>
-    <div class="res-row"><span>Qty</span><b>${r.qty} ${r.uom}</b></div>
-    <div class="res-row"><span>Material terpilih</span><b>${currentMaterialOption ? currentMaterialOption.label : '-'}</b></div>
   `;
 
-  document.getElementById('binGroupLabelOut').textContent = r.binGroupLabel || 'Informasi Bin';
+  document.getElementById('binGroupLabelOut').textContent = m.binGroupLabel || 'Informasi Bin';
   const gridWrap = document.getElementById('binGridWrap');
-  gridWrap.innerHTML = r.bins.map(b=>`<button type="button" class="bin-chip" onclick="selectBinOption('${b}', this)">${b}</button>`).join('');
-  selectedBinCode = null;
-  document.getElementById('nextToScanBtn').disabled = true;
+  // Static location indicators only — not a manual pick. The operator locates
+  // the material physically among these bins, then taps Next.
+  gridWrap.innerHTML = m.bins.map(b=>`
+    <div class="bin-chip indicator"><i class="bi bi-geo-alt-fill"></i>${b}</div>`).join('');
 
   document.getElementById('topbarTitle').textContent = PROC_LABELS[currentProcess].title;
-  document.getElementById('topbarSubtitle').textContent = 'Pilih lokasi bin';
+  document.getElementById('topbarSubtitle').textContent = 'Petunjuk lokasi bin';
   document.getElementById('topbarSub').style.display='flex';
 
   goPage('resdetail');
 }
 
-function selectBinOption(code, el){
-  selectedBinCode = code;
-  document.querySelectorAll('.bin-chip').forEach(b=>b.classList.remove('active'));
-  el.classList.add('active');
-  document.getElementById('nextToScanBtn').disabled = false;
-}
-
 function goToScanFromResDetail(){
-  if(!selectedBinCode) return;
+  if(!currentMaterialOption) return;
   document.getElementById('topbarTitle').textContent = PROC_LABELS[currentProcess].title;
   document.getElementById('topbarSubtitle').textContent = 'Scan bin untuk konfirmasi lokasi';
   document.getElementById('topbarSub').style.display='flex';
@@ -818,7 +871,7 @@ function goToScanFromResDetail(){
   document.getElementById('procStage1').style.display='block';
   document.getElementById('procStage2').style.display='none';
   document.getElementById('manualBinCode').value='';
-  document.getElementById('manualBinCode').placeholder = 'cth. ' + selectedBinCode;
+  document.getElementById('manualBinCode').placeholder = 'cth. ' + (currentMaterialOption.bins[0] || 'CS-A-03-02');
   document.getElementById('recentBinTitle').style.display='none';
   document.getElementById('recentBinWrap').innerHTML='';
   resetScannerUI();
@@ -833,7 +886,6 @@ function openProcess(type){
   currentProcess = type;
   currentReservation = null;
   currentMaterialOption = null;
-  selectedBinCode = null;
   currentBinCode = null;
 
   const info = PROC_LABELS[type];
@@ -967,13 +1019,13 @@ function scanBin(code){
   document.getElementById('binSlotOut').textContent = data.materials.length+' item';
 
   const noteEl = document.getElementById('binMatchNote');
-  if(selectedBinCode){
-    if(resolvedCode === selectedBinCode){
+  if(currentMaterialOption && Array.isArray(currentMaterialOption.bins)){
+    if(currentMaterialOption.bins.includes(resolvedCode)){
       noteEl.className = 'bin-match-note ok';
-      noteEl.textContent = 'Sesuai dengan bin yang dipilih sebelumnya.';
+      noteEl.textContent = 'Sesuai dengan lokasi bin pada petunjuk reservasi.';
     } else {
       noteEl.className = 'bin-match-note warn';
-      noteEl.textContent = 'Bin yang discan berbeda dari pilihan sebelumnya ('+selectedBinCode+'). Periksa kembali lokasi fisik.';
+      noteEl.textContent = 'Bin yang discan tidak ada dalam daftar lokasi reservasi ('+currentMaterialOption.bins.join(', ')+'). Periksa kembali lokasi fisik.';
     }
   } else {
     noteEl.className = 'bin-match-note';
@@ -996,10 +1048,9 @@ function scanBin(code){
   document.getElementById('procStage1').style.display='none';
   document.getElementById('procStage2').style.display='block';
 
-  // auto preselect material matching the reservation's material code, if any
-  if(currentReservation){
-    const wantedCode = (currentMaterialOption && currentMaterialOption.code) || currentReservation.kode;
-    const idx = data.materials.findIndex(m=>m.code===wantedCode);
+  // auto preselect material matching the reservation's chosen material code, if any
+  if(currentReservation && currentMaterialOption){
+    const idx = data.materials.findIndex(m=>m.code===currentMaterialOption.code);
     if(idx>=0){ sel.value = idx; selectMaterial(); }
   }
 }
@@ -1060,7 +1111,7 @@ function selectMaterial(){
     stepperBlock.style.display='block';
     const label = (type && PROC_LABELS[type]) ? PROC_LABELS[type].qtyLabel : 'Qty Diproses';
     document.getElementById('qtyStepperLabel').textContent = label;
-    document.getElementById('procQty').value = (currentReservation ? currentReservation.qty : 1);
+    document.getElementById('procQty').value = (currentMaterialOption ? currentMaterialOption.qty : 1);
     if(type==='gi'){
       penerimaBlock.style.display='block';
       document.getElementById('penerimaInput').value = currentReservation ? currentReservation.requester : '';
@@ -1202,7 +1253,6 @@ function doLogout(){
   currentProcess = null;
   currentReservation = null;
   currentMaterialOption = null;
-  selectedBinCode = null;
   currentBinCode = null;
   currentMaterial = null;
   goHome();
