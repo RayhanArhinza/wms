@@ -941,6 +941,11 @@ function renderRecentBins(){
 function scanBin(code){
   code = (code||'').trim().toUpperCase();
   if(!code){ showToast('Masukkan atau scan kode bin terlebih dahulu'); return; }
+
+  // Stop camera immediately — keeping it running in the background while stage2
+  // is shown causes rendering jank/flicker (especially with native <select> dropdowns).
+  stopScanner();
+
   const data = BIN_DB[code] || BIN_DB["CS-A-03-02"];
   const resolvedCode = BIN_DB[code] ? code : "CS-A-03-02";
   currentBinCode = resolvedCode;
