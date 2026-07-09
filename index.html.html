@@ -287,12 +287,34 @@ body{
   text-align:center; font-family:'IBM Plex Mono'; font-size:11.5px; font-weight:600; color:var(--navy);
 }
 .bin-chip.active{border-color:var(--orange); background:#FFF3E9; color:var(--orange-dk);}
-.bin-chip.indicator{
-  display:flex; flex-direction:column; align-items:center; gap:3px; padding:12px 4px;
-  border-color:var(--line); background:#FAFAFC; color:var(--navy); cursor:default;
+
+/* Modern bin-location card */
+.loc-card{
+  background:linear-gradient(180deg,#fff 0%,#fff 60%,#FFFBF6 100%);
+  border:1px solid var(--line); border-radius:16px; padding:16px;
+  position:relative; overflow:hidden;
 }
-.bin-chip.indicator i{color:var(--orange-dk); font-size:14px;}
+.loc-card::before{
+  content:""; position:absolute; left:0; top:0; bottom:0; width:4px;
+  background:linear-gradient(180deg,var(--orange),var(--orange-dk));
+}
+.loc-card-head{display:flex; align-items:center; gap:10px; margin-bottom:14px;}
+.loc-pin{
+  width:38px; height:38px; border-radius:11px; flex:none;
+  background:linear-gradient(135deg,var(--orange),var(--orange-dk));
+  display:flex; align-items:center; justify-content:center; color:#fff; font-size:16px;
+  box-shadow:0 4px 10px rgba(255,122,26,.35);
+}
+.loc-card-head .txt{min-width:0;}
+.loc-title{font-family:'Space Grotesk'; font-weight:700; font-size:13.5px; color:var(--navy);}
+.loc-sub{font-size:10.5px; color:var(--muted); margin-top:1px;}
+.loc-grid{display:grid; grid-template-columns:1fr 1fr; gap:0;}
+.loc-item{padding:2px 14px; position:relative;}
+.loc-item + .loc-item{border-left:1px dashed var(--line);}
+.loc-lbl{font-size:10px; font-weight:700; color:var(--orange-dk); letter-spacing:.06em; text-transform:uppercase; margin-bottom:4px;}
+.loc-val{font-family:'IBM Plex Mono'; font-weight:700; font-size:16px; color:var(--navy); letter-spacing:.01em; word-break:break-word;}
 .bin-indicator-hint{font-size:11px; color:var(--muted); margin:-4px 0 10px;}
+
 
 /* Material list (table) */
 .mat-table-wrap{background:#fff; border:1px solid var(--line); border-radius:14px; overflow:hidden;}
@@ -440,8 +462,8 @@ footer.f-note{font-size:10.5px; color:var(--muted); text-align:center; margin-to
     <div class="card-x stripe" id="resInfoCard"></div>
 
     <div class="section-title"><span class="idx">·</span><span id="binGroupLabelOut">Informasi Bin</span></div>
-    <div class="bin-indicator-hint">Lokasi material ada di salah satu bin berikut. Cari materialnya secara fisik, lalu tekan Next.</div>
-    <div class="bin-grid" id="binGridWrap"></div>
+    <div class="bin-indicator-hint">Cari lokasi material berikut secara fisik, lalu tekan Next.</div>
+    <div id="binGridWrap"></div>
 
     <button class="btn btn-orange w-100 py-2 mt-3" id="nextToScanBtn" onclick="goToScanFromResDetail()">Next</button>
   </div>
@@ -630,22 +652,19 @@ const RESERVATIONS = {
     {id:"GI-1001", noReservasi:"0000148428", tanggal:"09/07/2026", requester:"Budi Santoso", seksi:"Produksi 2",
       materials:[
         {code:"MAT-10023456", name:"Sarung Tangan Safety Nitrile L", qty:5, uom:"BOX",
-          binGroupLabel:"Informasi Bin · AA Ganjil",
-          bins:["AA311(A)","AA313(A)","AA313(B)","AA311(B)","AA315(A)","AA315(B)"]}
+          rak:"AA Ganjil", bin:"AA311(A)"}
       ]
     },
     {id:"GI-1002", noReservasi:"0000148431", tanggal:"09/07/2026", requester:"Sari Wulandari", seksi:"Maintenance",
       materials:[
         {code:"MAT-10088211", name:"Bearing 6204 ZZ", qty:20, uom:"PC",
-          binGroupLabel:"Informasi Bin · Rak A",
-          bins:["CS-A-03-02"]}
+          rak:"Rak A", bin:"CS-A-03-02"}
       ]
     },
     {id:"GI-1003", noReservasi:"0000148437", tanggal:"08/07/2026", requester:"Deni Kurniawan", seksi:"Produksi 1",
       materials:[
         {code:"MAT-10099002", name:"Filter Oli Hidrolik", qty:2, uom:"PC",
-          binGroupLabel:"Informasi Bin · Rak A",
-          bins:["CS-A-01-01"]}
+          rak:"Rak A", bin:"CS-A-01-01"}
       ]
     }
   ],
@@ -653,22 +672,19 @@ const RESERVATIONS = {
     {id:"PW-2001", noReservasi:"4500123456", tanggal:"09/07/2026", requester:"Andi R.", seksi:"Gudang Consume",
       materials:[
         {code:"MAT-10055671", name:"Motor Servo AC 750W", qty:2, uom:"PC",
-          binGroupLabel:"Informasi Bin · Rak B",
-          bins:["CS-B-02-01"]}
+          rak:"Rak B", bin:"CS-B-02-01"}
       ]
     },
     {id:"PW-2002", noReservasi:"4500123400", tanggal:"09/07/2026", requester:"Andi R.", seksi:"Gudang Consume",
       materials:[
         {code:"MAT-10012345", name:"Oli Gear SAE 90", qty:1, uom:"DRUM",
-          binGroupLabel:"Informasi Bin · Rak A",
-          bins:["CS-A-03-02"]}
+          rak:"Rak A", bin:"CS-A-03-02"}
       ]
     },
     {id:"PW-2003", noReservasi:"4500123388", tanggal:"08/07/2026", requester:"Andi R.", seksi:"Gudang Consume",
       materials:[
         {code:"MAT-10077341", name:"Selang Hidrolik 1/2\"", qty:30, uom:"MTR",
-          binGroupLabel:"Informasi Bin · Overflow",
-          bins:["OVERFLOW-01"]}
+          rak:"Overflow", bin:"OVERFLOW-01"}
       ]
     }
   ],
@@ -676,15 +692,13 @@ const RESERVATIONS = {
     {id:"OP-3001", noReservasi:"0000019912", tanggal:"09/07/2026", requester:"Jadwal Mingguan", seksi:"Gudang Consume",
       materials:[
         {code:"MAT-10023456", name:"Sarung Tangan Safety Nitrile L", qty:12, uom:"BOX",
-          binGroupLabel:"Informasi Bin · Rak A",
-          bins:["CS-A-03-02"]}
+          rak:"Rak A", bin:"CS-A-03-02"}
       ]
     },
     {id:"OP-3002", noReservasi:"0000019913", tanggal:"09/07/2026", requester:"Jadwal Mingguan", seksi:"Gudang Consume",
       materials:[
         {code:"MAT-10099002", name:"Filter Oli Hidrolik", qty:14, uom:"PC",
-          binGroupLabel:"Informasi Bin · Rak A",
-          bins:["CS-A-01-01"]}
+          rak:"Rak A", bin:"CS-A-01-01"}
       ]
     }
   ]
@@ -848,12 +862,29 @@ function openResDetailPage(){
     <div class="res-row"><span>Seksi</span><b>${r.seksi}</b></div>
   `;
 
-  document.getElementById('binGroupLabelOut').textContent = m.binGroupLabel || 'Informasi Bin';
+  document.getElementById('binGroupLabelOut').textContent = 'Informasi Bin';
   const gridWrap = document.getElementById('binGridWrap');
-  // Static location indicators only — not a manual pick. The operator locates
-  // the material physically among these bins, then taps Next.
-  gridWrap.innerHTML = m.bins.map(b=>`
-    <div class="bin-chip indicator"><i class="bi bi-geo-alt-fill"></i>${b}</div>`).join('');
+  // Single, non-clickable location card — pure guidance, not a manual pick.
+  gridWrap.innerHTML = `
+    <div class="loc-card">
+      <div class="loc-card-head">
+        <div class="loc-pin"><i class="bi bi-geo-alt-fill"></i></div>
+        <div class="txt">
+          <div class="loc-title">Lokasi Material</div>
+          <div class="loc-sub">Temukan bin ini secara fisik</div>
+        </div>
+      </div>
+      <div class="loc-grid">
+        <div class="loc-item">
+          <div class="loc-lbl">Rak</div>
+          <div class="loc-val">${m.rak}</div>
+        </div>
+        <div class="loc-item">
+          <div class="loc-lbl">Bin</div>
+          <div class="loc-val">${m.bin}</div>
+        </div>
+      </div>
+    </div>`;
 
   document.getElementById('topbarTitle').textContent = PROC_LABELS[currentProcess].title;
   document.getElementById('topbarSubtitle').textContent = 'Petunjuk lokasi bin';
@@ -871,7 +902,7 @@ function goToScanFromResDetail(){
   document.getElementById('procStage1').style.display='block';
   document.getElementById('procStage2').style.display='none';
   document.getElementById('manualBinCode').value='';
-  document.getElementById('manualBinCode').placeholder = 'cth. ' + (currentMaterialOption.bins[0] || 'CS-A-03-02');
+  document.getElementById('manualBinCode').placeholder = 'cth. ' + (currentMaterialOption.bin || 'CS-A-03-02');
   document.getElementById('recentBinTitle').style.display='none';
   document.getElementById('recentBinWrap').innerHTML='';
   resetScannerUI();
@@ -1019,13 +1050,13 @@ function scanBin(code){
   document.getElementById('binSlotOut').textContent = data.materials.length+' item';
 
   const noteEl = document.getElementById('binMatchNote');
-  if(currentMaterialOption && Array.isArray(currentMaterialOption.bins)){
-    if(currentMaterialOption.bins.includes(resolvedCode)){
+  if(currentMaterialOption && currentMaterialOption.bin){
+    if(resolvedCode === currentMaterialOption.bin){
       noteEl.className = 'bin-match-note ok';
       noteEl.textContent = 'Sesuai dengan lokasi bin pada petunjuk reservasi.';
     } else {
       noteEl.className = 'bin-match-note warn';
-      noteEl.textContent = 'Bin yang discan tidak ada dalam daftar lokasi reservasi ('+currentMaterialOption.bins.join(', ')+'). Periksa kembali lokasi fisik.';
+      noteEl.textContent = 'Bin yang discan berbeda dari petunjuk reservasi ('+currentMaterialOption.bin+'). Periksa kembali lokasi fisik.';
     }
   } else {
     noteEl.className = 'bin-match-note';
