@@ -25,6 +25,9 @@
 }
 *{box-sizing:border-box;}
 html,body{height:100%;}
+@supports (height: 100dvh){
+  html,body{height:100dvh;}
+}
 body{
   background:var(--bg);
   font-family:'Inter',system-ui,sans-serif;
@@ -35,6 +38,7 @@ body{
   max-width:430px;
   margin:0 auto;
   min-height:100vh;
+  min-height:100dvh;
   background:var(--bg);
   position:relative;
   box-shadow:0 0 40px rgba(0,0,0,.08);
@@ -80,7 +84,7 @@ body{
 /* ===== Page container ===== */
 .page{
   flex:1;
-  padding:16px 16px 96px;
+  padding:16px 16px calc(120px + env(safe-area-inset-bottom));
   display:none;
 }
 .page.active{display:block;animation:fadein .18s ease;}
